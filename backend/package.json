@@ -1,0 +1,37 @@
+{
+  "name": "express-typeorm",
+  "version": "0.0.1",
+  "description": "Awesome project developed with TypeORM.",
+  "devDependencies": {
+    "@types/cors": "^2.8.12",
+    "@types/express": "^4.17.13",
+    "@types/node": "^8.0.29",
+    "@types/passport": "^1.0.7",
+    "@types/passport-facebook": "^2.1.11",
+    "@types/passport-github": "^1.1.6",
+    "@types/passport-google-oauth20": "^2.0.10",
+    "@types/passport-jwt": "^3.0.6",
+    "nodemon": "^2.0.13",
+    "ts-node": "10.2.1",
+    "typescript": "^3.9.10"
+  },
+  "dependencies": {
+    "body-parser": "^1.18.1",
+    "cors": "^2.8.5",
+    "express": "^4.15.4",
+    "express-validator": "^6.12.2",
+    "jsonwebtoken": "^8.5.1",
+    "nanoid": "^3.1.29",
+    "passport": "^0.5.0",
+    "passport-facebook": "^3.0.0",
+    "passport-github": "^1.1.0",
+    "passport-google-oauth20": "^2.0.0",
+    "passport-jwt": "^4.0.0",
+    "pg": "^8.4.0",
+    "reflect-metadata": "^0.1.10",
+    "typeorm": "0.2.38"
+  },
+  "scripts": {
+    "start": "nodemon ./src/index.ts"
+  }
+}
