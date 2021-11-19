@@ -1,6 +1,7 @@
 import { Box, Grid, Tab, Tabs, Typography } from "@mui/material";
+import ContentLoader from "components/ContentLoader";
 import Empty from "components/Empty";
-import { ArticleCard } from "features/article";
+import ArticleCard from "features/article/components/ArticleCard";
 import { ArticleCardSekeleton } from "features/article/components/ArticleCard";
 import CommentCard, {
   CommentCardSkeleton,
@@ -8,23 +9,26 @@ import CommentCard, {
 import FollowerCard, {
   FollowerCardSkeleton,
 } from "features/profile/components/FollowerCard";
-import { SearchBox } from "features/search";
+import SearchBox from "./SearchBox";
 import React, { SyntheticEvent, useState } from "react";
 import { RouteComponentProps } from "react-router-dom";
 import {
   useSearchArticles,
   useSearchComments,
   useSearchUsers,
-} from "./useSearch";
+} from "./services";
 
-const searchFilters = ["Articles", "Comments", "People"];
-const sorters = ["Most relevant", "Latest", "Oldest"];
+const searchFilters = ["Bài viết", "Bình luận", "Mọi người"];
+const sorters = [
+  { text: "Phù hợp nhất", value: "relevance" },
+  { text: "Mới nhất", value: "latest" },
+  { text: "Cũ nhất", value: "oldest" },
+];
 export default function SearchPage({ location }: RouteComponentProps) {
   const [activeFilter, setActiveFilter] = useState(0);
   const [activeSorter, setActiveSorter] = useState(0);
   const q = new URLSearchParams(location.search).get("q");
-  const sort =
-    activeSorter > 0 ? sorters[activeSorter].toLowerCase() : undefined;
+  const sort = activeSorter > 0 ? sorters[activeSorter].value : undefined;
   const articles = useSearchArticles({
     q: q!,
     sort,
@@ -42,7 +46,9 @@ export default function SearchPage({ location }: RouteComponentProps) {
   });
   const renderSearchResults = () => {
     if (!q) return;
-    const noResult = <Empty height="50vh" message="No results" />;
+    const noResult = (
+      <Empty height="50vh" message="Không tìm thấy kết quả nào" />
+    );
     switch (activeFilter) {
       case 0:
         if (articles.isSuccess) {
@@ -50,21 +56,33 @@ export default function SearchPage({ location }: RouteComponentProps) {
             ? noResult
             : articles.data.map((a) => <ArticleCard key={a.id} article={a} />);
         }
-        return [...Array(10)].map((v, i) => <ArticleCardSekeleton key={i} />);
+        return (
+          <ContentLoader count={10}>
+            <ArticleCardSekeleton />
+          </ContentLoader>
+        );
       case 1:
         if (comments.isSuccess) {
           return comments.data.length == 0
             ? noResult
             : comments.data.map((c) => <CommentCard key={c.id} comment={c} />);
         }
-        return [...Array(10)].map((v, i) => <CommentCardSkeleton key={i} />);
+        return (
+          <ContentLoader count={10}>
+            <CommentCardSkeleton />
+          </ContentLoader>
+        );
       case 2:
         if (people.isSuccess) {
           return people.data.length == 0
             ? noResult
             : people.data.map((p) => <FollowerCard key={p.id} follower={p} />);
         }
-        return [...Array(10)].map((v, i) => <FollowerCardSkeleton key={i} />);
+        return (
+          <ContentLoader count={10}>
+            <FollowerCardSkeleton />
+          </ContentLoader>
+        );
     }
   };
   const handleFilter = (e: SyntheticEvent, v: any) => {
@@ -80,7 +98,7 @@ export default function SearchPage({ location }: RouteComponentProps) {
       </Box>
       <Grid container spacing={2}>
         <Grid item xs={12} md={3}>
-          <Typography variant="h5">Search results</Typography>
+          <Typography variant="h5">Kết quả tìm kiếm</Typography>
           <Tabs
             orientation="vertical"
             value={activeFilter}
@@ -94,7 +112,7 @@ export default function SearchPage({ location }: RouteComponentProps) {
         <Grid item xs={12} md={9}>
           <Tabs sx={{ mb: 2 }} value={activeSorter} onChange={handleSort}>
             {sorters.map((s) => (
-              <Tab label={s} key={s} />
+              <Tab label={s.text} key={s.value} />
             ))}
           </Tabs>
           {renderSearchResults()}

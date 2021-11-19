@@ -19,8 +19,9 @@ import {
   styled,
   Toolbar,
 } from "@mui/material";
+import ConfirmDialog from "components/ConfirmDialog";
 import { UserPreview } from "features/profile/types";
-import { SearchBox } from "features/search";
+import SearchBox from "features/search/SearchBox";
 import { useThemeMode } from "hooks/useThemeMode";
 import { useState } from "react";
 import { Link } from "react-router-dom";
@@ -38,7 +39,8 @@ const StyledAppBar = styled(AppBar)(({ theme }) => ({
 
 export default function Header({ user, onLogout, notificationsCount }: Props) {
   const { mode, toggleMode } = useThemeMode();
-  const [drawer, toggleDrawer] = useState(false);
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const handleCloseDrawer = () => setDrawerOpen(false);
   const [anchor, setAnchor] = useState<HTMLElement | null>(null);
   const menuOpen = Boolean(anchor);
   const handleMenuClose = () => {
@@ -53,7 +55,7 @@ export default function Header({ user, onLogout, notificationsCount }: Props) {
               color="inherit"
               edge="start"
               sx={{ display: { xs: "inline-flex", md: "none" } }}
-              onClick={() => toggleDrawer(true)}
+              onClick={() => setDrawerOpen(true)}
             >
               <MenuIcon />
             </IconButton>
@@ -96,7 +98,7 @@ export default function Header({ user, onLogout, notificationsCount }: Props) {
                   component={Link}
                   to="/article/new"
                 >
-                  Create Post
+                  Viết bài
                 </Button>
               )}
               <IconButton
@@ -142,30 +144,30 @@ export default function Header({ user, onLogout, notificationsCount }: Props) {
                       component={Link}
                       to={`/profile/${user.id}/articles`}
                     >
-                      Profile
+                      Trang cá nhân
                     </MenuItem>
                     <MenuItem
                       onClick={handleMenuClose}
                       component={Link}
                       to="/article/new"
                     >
-                      Create Post
+                      Viết bài
                     </MenuItem>
                     <MenuItem
                       onClick={handleMenuClose}
                       component={Link}
                       to="/reading-list"
                     >
-                      Reading List
+                      Lưu trữ
                     </MenuItem>
-                    <MenuItem
-                      onClick={() => {
+                    <ConfirmDialog
+                      actionButton={<MenuItem>Đăng xuất</MenuItem>}
+                      message="Bạn có chắc muốn đăng xuất khỏi tài khoản này?"
+                      onAccept={() => {
                         handleMenuClose();
-                        onLogout && onLogout();
+                        onLogout?.();
                       }}
-                    >
-                      Sign Out
-                    </MenuItem>
+                    />
                   </Menu>
                 </>
               )}
@@ -175,21 +177,18 @@ export default function Header({ user, onLogout, notificationsCount }: Props) {
       </StyledAppBar>
       <Drawer
         anchor="left"
-        open={drawer}
-        onClose={() => toggleDrawer(false)}
+        open={drawerOpen}
+        onClose={handleCloseDrawer}
         sx={{ "& .MuiDrawer-paper": { width: 320 } }}
         ModalProps={{ keepMounted: true }}
       >
-        <Toolbar
-          sx={{ justifyContent: "flex-end" }}
-          onClick={() => toggleDrawer(false)}
-        >
-          <IconButton>
+        <Toolbar sx={{ justifyContent: "flex-end" }}>
+          <IconButton onClick={handleCloseDrawer}>
             <CloseIcon />
           </IconButton>
         </Toolbar>
         <Divider />
-        <SideMenu />
+        <SideMenu onItemClick={handleCloseDrawer} />
       </Drawer>
     </>
   );

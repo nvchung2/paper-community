@@ -1,6 +1,6 @@
 import { FocusEvent } from "react";
 import { Autocomplete, TextField } from "@mui/material";
-import { useTags } from "features/tag/services/useTag";
+import { useTags } from "features/tag/services";
 interface Props {
   onChange: (value: string[]) => any;
   value?: string[];
@@ -27,7 +27,7 @@ export default function TagSelect({
           error={error}
           helperText={helperText}
           {...params}
-          placeholder="Add up to 3 tags..."
+          placeholder="Tối đa 3 thẻ. Ít nhất 1 thẻ..."
           fullWidth
           onBlur={onBlur}
           name="tags"

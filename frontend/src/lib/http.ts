@@ -1,4 +1,5 @@
-import axios from "axios";
+import axios, { AxiosError } from "axios";
+import useSnackbar from "hooks/useSnackbar";
 import useToken from "hooks/useToken";
 
 export interface ErrorResponse {
@@ -10,7 +11,12 @@ const http = axios.create({
 });
 http.interceptors.response.use(
   (res) => res.data,
-  (err) => Promise.reject(err)
+  (err: AxiosError<ErrorResponse>) => {
+    if (!err.response) {
+      useSnackbar.getState().error("Vui lòng kiểm tra kết nối internet");
+    }
+    return Promise.reject(err);
+  }
 );
 http.interceptors.request.use((config) => {
   const token = useToken.getState().token;

@@ -14,10 +14,7 @@ export interface SearchQuery {
   q: string;
 }
 export function createSearchQuery(q: string) {
-  return q
-    .split(/\s/)
-    .map((s) => s.trim())
-    .join("|");
+  return q.replace(/\|/g, "").replace(/\s+/g, " ").split(/\s/).join("|");
 }
 export async function getPaginationQueryResult<T>(
   qb: SelectQueryBuilder<T>,

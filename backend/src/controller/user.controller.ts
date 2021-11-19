@@ -85,22 +85,22 @@ export class UserController extends Controller {
     };
   }
   async updateProfile(req: Request) {
-    const user = await this.userRepo.findById(this.extractCurrentUser(req).id);
-    if (user) {
-      user.avatar = req.body.avatar;
-      user.bio = req.body.bio;
-      user.email = req.body.email;
-      user.githubLink = req.body.githubLink;
-      user.location = req.body.location;
-      user.name = req.body.name;
-      user.work = req.body.work;
-      await this.userRepo.save(user);
-      return {
-        status: 200,
-        json: user,
-      };
-    }
-    throw new NotFoundError("User not found");
+    const user = await this.userRepo.updateProfile(
+      this.extractCurrentUser(req),
+      {
+        avatar: req.body.avatar,
+        bio: req.body.bio,
+        email: req.body.email,
+        githubLink: req.body.githubLink,
+        location: req.body.location,
+        name: req.body.name,
+        work: req.body.work,
+      }
+    );
+    return {
+      status: 200,
+      json: user,
+    };
   }
   async getTopUsers() {
     const users = await this.userRepo.findTopUsers();

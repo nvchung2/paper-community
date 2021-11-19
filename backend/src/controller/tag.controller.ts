@@ -38,7 +38,7 @@ export class TagController extends Controller {
     };
   }
   async getTags() {
-    const tags = await this.tagRepo.find();
+    const tags = await this.tagRepo.findTags();
     return {
       json: tags,
     };

@@ -16,6 +16,7 @@ const queryClient = new QueryClient({
         const err = error as AxiosError<ErrorResponse>;
         return !!err.response && err.response.status != 401;
       },
+      staleTime: 60000,
     },
   },
 });

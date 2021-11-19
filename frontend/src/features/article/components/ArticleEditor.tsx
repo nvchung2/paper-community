@@ -1,7 +1,10 @@
 import { Paper, Stack } from "@mui/material";
+import coverImage from "assets/cover.jpg";
 import FTextField from "components/FTextField";
 import LoadingButton from "components/LoadingButton";
 import Markdown from "components/Markdown";
+import RichTextField from "components/RichTextField";
+import { useUploadImage } from "features/upload/useUpload";
 import { Form, Formik, FormikHelpers } from "formik";
 import React, { useState } from "react";
 import * as Yup from "yup";
@@ -18,8 +21,8 @@ interface Props {
   ) => any;
 }
 const schema = Yup.object({
-  title: Yup.string().required().min(3).max(200),
-  content: Yup.string().required().min(10),
+  title: Yup.string().required().min(1).max(250),
+  content: Yup.string().required().min(1),
   tags: Yup.array()
     .required()
     .min(1)
@@ -30,6 +33,34 @@ const schema = Yup.object({
       })
     ),
 });
+interface ContentTextFieldProps {
+  onUploadFileDone: (markup: string) => any;
+  onSelectEmoji: (emoji: string) => any;
+}
+function ContentTextField({
+  onSelectEmoji,
+  onUploadFileDone,
+}: ContentTextFieldProps) {
+  const upload = useUploadImage();
+  const handleUpload = async (file: File) => {
+    const { url } = await upload.mutateAsync(file);
+    onUploadFileDone(`![Image](${url})`);
+  };
+  return (
+    <RichTextField
+      placeholder="Nội dung bài viết..."
+      fullWidth
+      multiline
+      rows={5}
+      name="content"
+      onSelectFile={handleUpload}
+      onSelectEmoji={onSelectEmoji}
+      uploading={upload.isLoading}
+      enableEmoji
+      enableFileUpload
+    />
+  );
+}
 export default function ArticleEditor({
   initialArticle,
   preview = false,
@@ -37,7 +68,7 @@ export default function ArticleEditor({
 }: Props) {
   const initialValues: CreateOrUpdateArticle = initialArticle || {
     content: "",
-    coverImage: "",
+    coverImage: coverImage,
     tags: [],
     title: "",
   };
@@ -78,7 +109,7 @@ export default function ArticleEditor({
               />
               <FTextField
                 sx={{ "& .MuiInputBase-root": { fontSize: "h3.fontSize" } }}
-                placeholder="Post title here..."
+                placeholder="Tiêu đề bài viết..."
                 fullWidth
                 name="title"
               />
@@ -96,16 +127,17 @@ export default function ArticleEditor({
                   errors.tags &&
                   (typeof errors.tags == "string"
                     ? errors.tags
-                    : "Invalid tag name (a valid tag name must be 3-30 characters")
+                    : "Tên thẻ không hợp lệ (tên hợp lệ phải có 3-30 ký tự)")
                 }
                 onBlur={handleBlur}
               />
-              <FTextField
-                placeholder="Write your post content here..."
-                fullWidth
-                multiline
-                rows={5}
-                name="content"
+              <ContentTextField
+                onSelectEmoji={(emoji) =>
+                  setFieldValue("content", values.content + emoji)
+                }
+                onUploadFileDone={(markup) =>
+                  setFieldValue("content", values.content + markup)
+                }
               />
               <Stack direction="row" alignItems="center" spacing={2}>
                 <LoadingButton
@@ -113,7 +145,7 @@ export default function ArticleEditor({
                   type="submit"
                   variant="contained"
                 >
-                  {initialArticle ? "Save" : "Publish"}
+                  {initialArticle ? "Lưu chỉnh sửa" : "Xuất bản"}
                 </LoadingButton>
               </Stack>
             </Paper>

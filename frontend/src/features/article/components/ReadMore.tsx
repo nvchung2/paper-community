@@ -1,19 +1,21 @@
 import {
+  Box,
   Link as MuiLink,
   List,
+  ListItem,
   ListItemButton,
   ListItemText,
   ListSubheader,
-  Box,
   Skeleton,
 } from "@mui/material";
+import ContentLoader from "components/ContentLoader";
 import { UserPreview } from "features/profile/types";
 import React from "react";
 import { Link } from "react-router-dom";
 import { Article } from "../types";
 interface Props {
-  author: UserPreview;
   articles: Article[];
+  author: UserPreview;
 }
 export function ReadMoreSkeleton() {
   return (
@@ -25,14 +27,14 @@ export function ReadMoreSkeleton() {
         </ListSubheader>
       }
     >
-      {[...Array(5)].map((v, i) => (
-        <ListItemButton key={i} sx={{ borderTop: (theme) => theme.border }}>
+      <ContentLoader count={5}>
+        <ListItemButton sx={{ borderTop: (theme) => theme.border }}>
           <ListItemText
             primary={<Skeleton />}
             secondary={<Skeleton width="60%" />}
           />
         </ListItemButton>
-      ))}
+      </ContentLoader>
     </List>
   );
 }
@@ -42,7 +44,7 @@ export default function ReadMore({ author, articles }: Props) {
       disablePadding
       subheader={
         <ListSubheader>
-          Read more from{" "}
+          Xem thêm từ{" "}
           <MuiLink
             component={Link}
             to={`/profile/${author.id}/articles`}
@@ -53,18 +55,30 @@ export default function ReadMore({ author, articles }: Props) {
         </ListSubheader>
       }
     >
-      {articles.map((a) => (
-        <ListItemButton key={a.id} sx={{ borderTop: (theme) => theme.border }}>
+      {articles.length == 0 ? (
+        <ListItem>
           <ListItemText
-            primary={a.title}
-            secondary={a.tags.map((t) => (
-              <Box key={t.id} component="span" display="inline-block" p={0.5}>
-                #{t.name}
-              </Box>
-            ))}
+            primary="<Không có bài viết nào>"
+            primaryTypographyProps={{ color: "GrayText" }}
           />
-        </ListItemButton>
-      ))}
+        </ListItem>
+      ) : (
+        articles.map((a) => (
+          <ListItemButton
+            key={a.id}
+            sx={{ borderTop: (theme) => theme.border }}
+          >
+            <ListItemText
+              primary={a.title}
+              secondary={a.tags.map((t) => (
+                <Box key={t.id} component="span" display="inline-block" p={0.5}>
+                  #{t.name}
+                </Box>
+              ))}
+            />
+          </ListItemButton>
+        ))
+      )}
     </List>
   );
 }

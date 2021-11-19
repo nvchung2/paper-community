@@ -14,10 +14,10 @@ export default function LoginRequiredDialog() {
   const { show, toggleDialog } = useLoginRequiredDialog();
   return (
     <Dialog open={show} onClose={toggleDialog} maxWidth="xs">
-      <DialogTitle>Login to continue</DialogTitle>
+      <DialogTitle>Đăng nhập để tiếp tục</DialogTitle>
       <DialogContent sx={{ textAlign: "center" }}>
         <DialogContentText sx={{ textAlign: "left" }}>
-          Join our community where coders share and and stay up-to-date
+          Tham gia Paper Community ngay
         </DialogContentText>
         <Button
           sx={{ mt: 2, width: "80%" }}
@@ -26,11 +26,11 @@ export default function LoginRequiredDialog() {
           to="/login"
           onClick={toggleDialog}
         >
-          Login
+          Đăng nhập
         </Button>
       </DialogContent>
       <DialogActions>
-        <Button onClick={toggleDialog}>Close</Button>
+        <Button onClick={toggleDialog}>Đóng</Button>
       </DialogActions>
     </Dialog>
   );

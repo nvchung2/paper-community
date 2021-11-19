@@ -2,11 +2,13 @@ import { Request } from "express";
 import { getCustomRepository } from "typeorm";
 import { ArticleRepository } from "../repository/article.repository";
 import { CommentRepository } from "../repository/comment.repository";
-import {
-  NotificationRepository,
-  NotifyDTO,
-} from "../repository/notification.repository";
+import { NotificationRepository } from "../repository/notification.repository";
 import { requireAuth } from "../security/requireAuth.middleware";
+import {
+  createCommentValidators,
+  updateCommentValidators,
+} from "../validator/comment.validator";
+import { validate } from "../validator/validate.middleware";
 import { Controller, RouterConfig } from "./controller";
 
 export class CommentController extends Controller {
@@ -19,13 +21,13 @@ export class CommentController extends Controller {
       handlers: [
         {
           method: "post",
-          middlewares: [requireAuth],
+          middlewares: [requireAuth, ...createCommentValidators, validate],
           handler: this.createComment,
         },
         {
           path: "/:id",
           method: "put",
-          middlewares: [requireAuth],
+          middlewares: [requireAuth, ...updateCommentValidators, validate],
           handler: this.updateComment,
         },
         {
@@ -55,13 +57,15 @@ export class CommentController extends Controller {
           : (await this.articleRepo.findById(comment.articleId))!.author.id,
       ];
       targets[0] != user.id &&
-        this.notiRepo.notify({
-          notifiableId: comment.id,
-          data: { articleId: comment.articleId },
-          source: user,
-          notifiableType: parentId ? "reply" : "comment",
-          targets,
-        });
+        this.notiRepo
+          .notify({
+            notifiableId: comment.id,
+            data: { articleId: comment.articleId },
+            source: user,
+            notifiableType: parentId ? "reply" : "comment",
+            targets,
+          })
+          .catch(console.log);
     }
     return {
       status: 201,
@@ -77,10 +81,10 @@ export class CommentController extends Controller {
     return { json: comment };
   }
   async deleteComment(req: Request) {
-    await this.commentRepo.delete({
-      id: req.params.id,
-      author: this.extractCurrentUser(req),
-    });
+    await this.commentRepo.deleteComment(
+      this.extractCurrentUser(req),
+      req.params.id
+    );
     return { status: 204 };
   }
 }

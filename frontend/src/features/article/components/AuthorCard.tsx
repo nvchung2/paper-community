@@ -1,6 +1,7 @@
 import { Cake, LocationOn, Work } from "@mui/icons-material";
 import {
   Avatar,
+  Box,
   Button,
   List,
   ListItem,
@@ -9,12 +10,13 @@ import {
   Paper,
   Skeleton,
   Stack,
-  Box,
   Typography,
+  Link as MuiLink,
 } from "@mui/material";
 import { useAuth } from "features/auth/AuthenticationProvider";
 import FollowButton from "features/follow/FollowButton";
 import { User } from "features/profile/types";
+import { formatDate } from "lib/utils";
 import React from "react";
 import { Link } from "react-router-dom";
 export function AuthorCardSkeleton() {
@@ -38,19 +40,19 @@ export function AuthorCardSkeleton() {
           <ListItemIcon>
             <Work />
           </ListItemIcon>
-          <ListItemText primary="Work" secondary={<Skeleton />} />
+          <ListItemText primary="Nơi làm việc" secondary={<Skeleton />} />
         </ListItem>
         <ListItem disablePadding>
           <ListItemIcon>
             <Cake />
           </ListItemIcon>
-          <ListItemText primary="Joined" secondary={<Skeleton />} />
+          <ListItemText primary="Ngày tham gia" secondary={<Skeleton />} />
         </ListItem>
         <ListItem disablePadding>
           <ListItemIcon>
             <LocationOn />
           </ListItemIcon>
-          <ListItemText primary="Location" secondary={<Skeleton />} />
+          <ListItemText primary="Vị trí" secondary={<Skeleton />} />
         </ListItem>
       </List>
     </Paper>
@@ -65,9 +67,14 @@ export default function AuthorCard({ author }: Props) {
     <Paper sx={{ p: 2 }}>
       <Box display="flex" alignItems="center" flexWrap="wrap">
         <Avatar src={author.avatar} />
-        <Typography ml={2} fontWeight="bold">
+        <MuiLink
+          component={Link}
+          to={`/profile/${author.id}/articles`}
+          ml={2}
+          fontWeight="bold"
+        >
           {author.name}
-        </Typography>
+        </MuiLink>
         {user?.id == author.id ? (
           <Button
             component={Link}
@@ -75,7 +82,7 @@ export default function AuthorCard({ author }: Props) {
             variant="contained"
             sx={{ my: 2, ml: "auto", width: { lg: "100%" } }}
           >
-            Edit profile
+            Chỉnh sửa
           </Button>
         ) : (
           <FollowButton
@@ -93,19 +100,22 @@ export default function AuthorCard({ author }: Props) {
           <ListItemIcon>
             <Work />
           </ListItemIcon>
-          <ListItemText primary="Work" secondary={author.work} />
+          <ListItemText primary="Nơi làm việc" secondary={author.work} />
         </ListItem>
         <ListItem disablePadding>
           <ListItemIcon>
             <Cake />
           </ListItemIcon>
-          <ListItemText primary="Joined" secondary={author.joinedDate} />
+          <ListItemText
+            primary="Ngày tham gia"
+            secondary={formatDate(author.joinedDate, true)}
+          />
         </ListItem>
         <ListItem disablePadding>
           <ListItemIcon>
             <LocationOn />
           </ListItemIcon>
-          <ListItemText primary="Location" secondary={author.location} />
+          <ListItemText primary="Vị trí" secondary={author.location} />
         </ListItem>
       </List>
     </Paper>

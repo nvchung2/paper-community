@@ -2,7 +2,7 @@ import useSnackbar from "hooks/useSnackbar";
 import http from "lib/http";
 import { MutationConfig } from "lib/react-query";
 import { useMutation, useQueryClient } from "react-query";
-import { Comment, CreateComment } from "../types";
+import { Comment, CreateComment } from "./types";
 
 function createComment(data: CreateComment): Promise<Comment> {
   return http.post("/comments", data);
@@ -26,7 +26,7 @@ export function useCreateComment(
     onSuccess: async (_, { articleId }) => {
       await client.invalidateQueries("comment");
       await client.invalidateQueries(["article", articleId]);
-      success("Comment created");
+      success("Bình luận được tạo");
     },
     ...config,
   });
@@ -42,7 +42,7 @@ export function useUpdateComment({ id, config }: UseUpdateCommentOptions) {
     mutationFn: (data) => updateComment(id, data),
     onSuccess: async () => {
       await client.invalidateQueries("comment");
-      success("Comment updated");
+      success("Bình luận được cập nhật");
     },
     ...config,
   });
@@ -62,7 +62,8 @@ export function useDeleteComment({
     onSuccess: async () => {
       await client.invalidateQueries("comment");
       await client.invalidateQueries(["article", articleId]);
-      success("Comment deleted");
+      await client.invalidateQueries("profile");
+      success("Bình luận bị xóa");
     },
     ...config,
   });

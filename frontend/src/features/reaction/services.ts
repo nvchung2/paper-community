@@ -1,8 +1,7 @@
-import useSnackbar from "hooks/useSnackbar";
 import http from "lib/http";
 import { MutationConfig, QueryConfig } from "lib/react-query";
 import { useMutation, useQuery, useQueryClient } from "react-query";
-import { ReactableType, Reaction, ReactType } from "../types";
+import { ReactableType, Reaction, ReactType } from "./types";
 
 type NormalizedReaction = Record<
   ReactableType,
@@ -38,7 +37,6 @@ function removeReaction(id: string) {
 export function useCreateReaction(
   config?: MutationConfig<typeof createReaction>
 ) {
-  const { success } = useSnackbar();
   const client = useQueryClient();
   return useMutation({
     mutationFn: createReaction,
@@ -49,7 +47,6 @@ export function useCreateReaction(
           ? [reactableType, reactableId]
           : reactableType
       );
-      success("Reaction created");
     },
     ...config,
   });
@@ -64,18 +61,17 @@ export function useRemoveReaction({
   reactableType,
   config,
 }: UseRemoveReactionOptions) {
-  const { success } = useSnackbar();
   const client = useQueryClient();
   return useMutation({
     mutationFn: removeReaction,
     onSuccess: async (_) => {
       await client.invalidateQueries("reaction");
+      await client.invalidateQueries("reading-list");
       await client.invalidateQueries(
         reactableType == "article"
           ? [reactableType, reactableId]
           : reactableType
       );
-      success("Reaction removed");
     },
     ...config,
   });

@@ -1,6 +1,7 @@
 import { Grid, Skeleton } from "@mui/material";
+import ContentLoader from "components/ContentLoader";
 import Empty from "components/Empty";
-import { ArticleCard } from "features/article";
+import ArticleCard from "features/article/components/ArticleCard";
 import { ArticleCardSekeleton } from "features/article/components/ArticleCard";
 import { useAuth } from "features/auth/AuthenticationProvider";
 import CommentCard, {
@@ -15,7 +16,7 @@ import useProfile, {
   useUserArticles,
   useUserComments,
   useUserFollowers,
-} from "../services/useProfile";
+} from "../services";
 type ListProps = {
   id: string;
   count: number;
@@ -23,51 +24,51 @@ type ListProps = {
 function UserCommentList({ id, count }: ListProps) {
   const comments = useUserComments({ id, config: { enabled: count > 0 } });
   if (count == 0) {
-    return (
-      <Empty
-        height={150}
-        message="This user has not written any comments yet!"
-      />
-    );
+    return <Empty height={150} message="Không có bình luận nào!" />;
   }
   return (
     <>
-      {comments.data
-        ? comments.data.map((c) => <CommentCard key={c.id} comment={c} />)
-        : [...Array(count)].map((v, i) => <CommentCardSkeleton key={i} />)}
+      {comments.data ? (
+        comments.data.map((c) => <CommentCard key={c.id} comment={c} />)
+      ) : (
+        <ContentLoader count={count}>
+          <CommentCardSkeleton />
+        </ContentLoader>
+      )}
     </>
   );
 }
 function UserArticleList({ id, count }: ListProps) {
   const articles = useUserArticles({ id, config: { enabled: count > 0 } });
   if (count == 0) {
-    return (
-      <Empty
-        height={150}
-        message="This user has not posted any articles yet!"
-      />
-    );
+    return <Empty height={150} message="Không có bài viết nào!" />;
   }
   return (
     <>
-      {articles.data
-        ? articles.data.map((a) => <ArticleCard key={a.id} article={a} />)
-        : [...Array(count)].map((v, i) => <ArticleCardSekeleton key={i} />)}
+      {articles.data ? (
+        articles.data.map((a) => <ArticleCard key={a.id} article={a} />)
+      ) : (
+        <ContentLoader count={count}>
+          <ArticleCardSekeleton />
+        </ContentLoader>
+      )}
     </>
   );
 }
 function UserFollowerList({ id, count }: ListProps) {
   const followers = useUserFollowers({ id, config: { enabled: count > 0 } });
   if (count == 0) {
-    return <Empty height={150} message="This user has no followers" />;
+    return <Empty height={150} message="Không có người theo dõi nào" />;
   }
   return (
     <>
-      {followers.isSuccess
-        ? followers.data.map((f) => (
-            <FollowerCard key={f.id} follower={f.user} />
-          ))
-        : [...Array(count)].map((v, i) => <FollowerCardSkeleton key={i} />)}
+      {followers.isSuccess ? (
+        followers.data.map((f) => <FollowerCard key={f.id} follower={f.user} />)
+      ) : (
+        <ContentLoader count={count}>
+          <FollowerCardSkeleton />
+        </ContentLoader>
+      )}
     </>
   );
 }

@@ -61,7 +61,7 @@ function SaveButton(props: Omit<Reaction, "id">) {
         onClick={handleClick}
         sx={{ ml: "auto" }}
       >
-        Saved
+        Đã lưu
       </LoadingButton>
     );
   }
@@ -71,7 +71,7 @@ function SaveButton(props: Omit<Reaction, "id">) {
       onClick={handleClick}
       sx={{ ml: "auto" }}
     >
-      Save
+      Lưu
     </LoadingButton>
   );
 }
@@ -112,7 +112,7 @@ export default function ArticleCard({ article }: Props) {
             >
               {user?.id == article.author.id && (
                 <MenuItem component={Link} to={`/article/edit/${article.id}`}>
-                  Edit
+                  Sửa
                 </MenuItem>
               )}
               {user?.id == article.author.id && (
@@ -120,10 +120,10 @@ export default function ArticleCard({ article }: Props) {
                   component={HashLink}
                   to={`/article/edit/${article.id}#dangerZone`}
                 >
-                  Delete
+                  Xóa
                 </MenuItem>
               )}
-              <MenuItem>Report</MenuItem>
+              <MenuItem>Báo cáo</MenuItem>
             </Menu>
           </>
         }
@@ -175,7 +175,7 @@ export default function ArticleCard({ article }: Props) {
         >
           {article.reactionsCount}
           <Box component="span" sx={{ display: ["none", null, "inline"] }}>
-            &nbsp;reactions
+            &nbsp;tương tác
           </Box>
         </Button>
         <Button
@@ -186,7 +186,7 @@ export default function ArticleCard({ article }: Props) {
         >
           {article.commentsCount}
           <Box component="span" sx={{ display: ["none", null, "inline"] }}>
-            &nbsp;comments
+            &nbsp;bình luận
           </Box>
         </Button>
         <SaveButton

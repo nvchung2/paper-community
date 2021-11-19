@@ -1,46 +1,61 @@
 import {
   Avatar,
   List,
+  ListItem,
   ListItemAvatar,
   ListItemButton,
   ListItemText,
   Skeleton,
 } from "@mui/material";
+import ContentLoader from "components/ContentLoader";
 import { formatDate } from "lib/utils";
 import { Link } from "react-router-dom";
-import { useRecommendations } from "../services/useArticle";
+import { Article } from "../types";
 interface Props {
-  articleId: string;
+  articles: Article[];
 }
-export default function ReadNext({ articleId }: Props) {
-  const articles = useRecommendations({ id: articleId });
+export function ReadNextSkeleton() {
   return (
     <List disablePadding>
-      {articles.isSuccess
-        ? articles.data.map((a) => (
-            <ListItemButton key={a.id} component={Link} to={`/article/${a.id}`}>
-              <ListItemAvatar>
-                <Avatar src={a.author.avatar} />
-              </ListItemAvatar>
-              <ListItemText
-                primary={a.title}
-                secondary={`${a.author.name} - ${formatDate(a.createdTime)}`}
-              />
-            </ListItemButton>
-          ))
-        : [...Array(5)].map((v, i) => (
-            <ListItemButton key={i}>
-              <ListItemAvatar>
-                <Avatar>
-                  <Skeleton variant="circular" />
-                </Avatar>
-              </ListItemAvatar>
-              <ListItemText
-                primary={<Skeleton />}
-                secondary={<Skeleton width="60%" />}
-              />
-            </ListItemButton>
-          ))}
+      <ContentLoader count={5}>
+        <ListItemButton>
+          <ListItemAvatar>
+            <Avatar>
+              <Skeleton variant="circular" />
+            </Avatar>
+          </ListItemAvatar>
+          <ListItemText
+            primary={<Skeleton />}
+            secondary={<Skeleton width="60%" />}
+          />
+        </ListItemButton>
+      </ContentLoader>
+    </List>
+  );
+}
+export default function ReadNext({ articles }: Props) {
+  return (
+    <List disablePadding>
+      {articles.length == 0 ? (
+        <ListItem>
+          <ListItemText
+            primary="<Không có bài viết nào>"
+            primaryTypographyProps={{ color: "GrayText" }}
+          />
+        </ListItem>
+      ) : (
+        articles.map((a) => (
+          <ListItemButton key={a.id} component={Link} to={`/article/${a.id}`}>
+            <ListItemAvatar>
+              <Avatar src={a.author.avatar} />
+            </ListItemAvatar>
+            <ListItemText
+              primary={a.title}
+              secondary={`${a.author.name} - ${formatDate(a.createdTime)}`}
+            />
+          </ListItemButton>
+        ))
+      )}
     </List>
   );
 }

@@ -1,11 +1,9 @@
 import { Grid, Tab, Tabs, Typography } from "@mui/material";
+import ContentLoader from "components/ContentLoader";
 import React, { SyntheticEvent, useState } from "react";
 import NotificationCard, { NotificationCardSkeleton } from "./NotificationCard";
-import {
-  useMarkNotificationsAsRead,
-  useNotifications,
-} from "./useNotification";
-const notificationFilters = ["All", "Comments", "Articles"];
+import { useMarkNotificationsAsRead, useNotifications } from "./services";
+const notificationFilters = ["Tất cả", "Bình luận", "Bài viết"];
 export default function NotificationPage() {
   const [activeFilter, setActiveFilter] = useState(0);
   const handleFilter = (e: SyntheticEvent, v: any) => {
@@ -17,7 +15,11 @@ export default function NotificationPage() {
   });
   const renderNotis = () => {
     if (!notis.isSuccess) {
-      return [...Array(5)].map((v, i) => <NotificationCardSkeleton key={i} />);
+      return (
+        <ContentLoader count={5}>
+          <NotificationCardSkeleton />
+        </ContentLoader>
+      );
     }
     let data = notis.data;
     if (activeFilter > 0) {
@@ -32,7 +34,7 @@ export default function NotificationPage() {
   return (
     <Grid container spacing={2}>
       <Grid item xs={12} md={3}>
-        <Typography variant="h5">Notifications</Typography>
+        <Typography variant="h5">Thông báo</Typography>
         <Tabs
           orientation="vertical"
           value={activeFilter}

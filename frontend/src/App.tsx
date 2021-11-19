@@ -1,4 +1,4 @@
-import { CssBaseline, ThemeProvider } from "@mui/material";
+import { CssBaseline, GlobalStyles, ThemeProvider } from "@mui/material";
 import ErrorBoundary from "components/ErrorBoundary";
 import PageLoad from "components/PageLoader";
 import SnackbarList from "components/SnackbarList";
@@ -21,6 +21,7 @@ export default function App() {
       <QueryClientProvider client={queryClient}>
         <ThemeProvider theme={mode ? darkTheme : lightTheme}>
           <CssBaseline />
+          <GlobalStyles styles={{ img: { maxWidth: "100%" } }} />
           <Suspense fallback={<PageLoad />}>
             <BrowserRouter>
               <AuthProvider>

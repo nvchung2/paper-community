@@ -7,11 +7,13 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { ArticleCard } from "features/article";
+import ContentLoader from "components/ContentLoader";
+import ArticleCard from "features/article/components/ArticleCard";
 import { ArticleCardSekeleton } from "features/article/components/ArticleCard";
 import { TagPreview } from "features/tag/types";
 import React, { ChangeEvent, SyntheticEvent, useMemo, useState } from "react";
-import { useReadingList } from "./useReadingList";
+import { useReadingList } from "./services";
+
 export default function ReadingListPage() {
   const readingList = useReadingList();
   const tags = useMemo(() => {
@@ -42,7 +44,7 @@ export default function ReadingListPage() {
     <Grid container spacing={2}>
       <Grid item xs={12} md={3}>
         <Typography variant="h5">
-          Reading List ({readingList.data?.length || 0})
+          Bài viết đã lưu ({readingList.data?.length || 0})
         </Typography>
         <Tabs
           orientation="vertical"
@@ -61,7 +63,7 @@ export default function ReadingListPage() {
       <Grid item xs={12} md={9}>
         <TextField
           sx={{ mb: 2 }}
-          placeholder="Enter some text to filter on..."
+          placeholder="Nhập để tìm kiếm..."
           size="small"
           fullWidth
           value={filterText}
@@ -74,9 +76,13 @@ export default function ReadingListPage() {
             ),
           }}
         />
-        {data
-          ? data.map((a) => <ArticleCard key={a.id} article={a} />)
-          : [...Array(10)].map((v, i) => <ArticleCardSekeleton key={i} />)}
+        {data ? (
+          data.map((a) => <ArticleCard key={a.id} article={a} />)
+        ) : (
+          <ContentLoader count={5}>
+            <ArticleCardSekeleton />
+          </ContentLoader>
+        )}
       </Grid>
     </Grid>
   );

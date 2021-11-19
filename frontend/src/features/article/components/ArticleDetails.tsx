@@ -11,6 +11,7 @@ import {
   Button,
   Skeleton,
 } from "@mui/material";
+import ContentLoader from "components/ContentLoader";
 import Markdown from "components/Markdown";
 import { useAuth } from "features/auth/AuthenticationProvider";
 import { formatDate } from "lib/utils";
@@ -44,13 +45,9 @@ export function ArticleDetailsSkeleton() {
           <Skeleton />
         </Typography>
         <Box sx={{ mt: 1, mb: 2 }}>
-          {[...Array(3)].map((v, i) => (
-            <Skeleton
-              key={i}
-              sx={{ display: "inline-block", mr: 2 }}
-              width="4rem"
-            />
-          ))}
+          <ContentLoader count={3}>
+            <Skeleton sx={{ display: "inline-block", mr: 2 }} width="4rem" />
+          </ContentLoader>
         </Box>
         <Stack
           direction="row"
@@ -74,9 +71,9 @@ export function ArticleDetailsSkeleton() {
           </div>
         </Stack>
         <Typography variant="body1" sx={{ mt: 1 }}>
-          {[...Array(10)].map((v, i) => (
-            <Skeleton width="100%" key={i} />
-          ))}
+          <ContentLoader count={10}>
+            <Skeleton width="100%" />
+          </ContentLoader>
         </Typography>
       </Content>
     </Paper>
@@ -110,7 +107,7 @@ export default function ArticleDetails({ article }: Props) {
           ))}
         </Box>
         <Box display="flex" alignItems="center" flexWrap="wrap">
-          <Stack direction="row" gap={2}>
+          <Stack direction="row" gap={2} alignItems="center">
             <Avatar src={article.author.avatar} />
             <div>
               <Typography variant="body1">
@@ -122,8 +119,8 @@ export default function ArticleDetails({ article }: Props) {
                 </MuiLink>
               </Typography>
               <Typography component="time" variant="caption" color="GrayText">
-                Posted on {formatDate(article.createdTime)} &middot; {article.readingTime} minutes
-                read
+                Đã đăng vào lúc {formatDate(article.createdTime)} &middot;{" "}
+                {article.readingTime} phút đọc
               </Typography>
             </div>
           </Stack>
@@ -135,7 +132,7 @@ export default function ArticleDetails({ article }: Props) {
               to={`/article/edit/${article.id}`}
               sx={{ ml: "auto" }}
             >
-              Edit
+              Sửa
             </Button>
           )}
         </Box>

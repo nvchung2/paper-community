@@ -1,9 +1,11 @@
 import { lazy } from "react";
 
-const HomePage = lazy(() => import("features/home"));
-const SearchPage = lazy(() => import("features/search"));
-const LoginPage = lazy(() => import("features/auth"));
-const NotificationPage = lazy(() => import("features/notification"));
+const HomePage = lazy(() => import("features/home/HomePage"));
+const SearchPage = lazy(() => import("features/search/SearchPage"));
+const LoginPage = lazy(() => import("features/auth/LoginPage"));
+const NotificationPage = lazy(
+  () => import("features/notification/NotificationPage")
+);
 const ProfilePage = lazy(() => import("features/profile/pages/ProfilePage"));
 const EditProfilePage = lazy(
   () => import("features/profile/pages/EditProfilePage")
@@ -12,7 +14,9 @@ const ArticleEditorPage = lazy(
   () => import("features/article/pages/ArticleEditorPage")
 );
 const ArticlePage = lazy(() => import("features/article/pages/ArticlePage"));
-const ReadingListPage = lazy(() => import("features/readling-list"));
+const ReadingListPage = lazy(
+  () => import("features/readling-list/ReadingListPage")
+);
 const TagListPage = lazy(() => import("features/tag/pages/TagListPage"));
 const TagPage = lazy(() => import("features/tag/pages/TagPage"));
 const LoginCallBack = lazy(() => import("features/auth/LoginCallback"));

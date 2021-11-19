@@ -4,7 +4,7 @@ import LoadingButton from "components/LoadingButton";
 import { useAuth } from "features/auth/AuthenticationProvider";
 import useLoginRequiredDialog from "hooks/useLoginRequiredDialog";
 import React from "react";
-import { useCreateFollow, useFollow, useUnfollow } from "./services/useFollow";
+import { useCreateFollow, useFollow, useUnfollow } from "./services";
 interface Props {
   followableId: string;
   followableType: "tag" | "user";
@@ -17,7 +17,7 @@ export default function FollowButton({
   const { user } = useAuth();
   const follows = useFollow({ enabled: !!user });
   const followMutation = useCreateFollow();
-  const unfollowMutation = useUnfollow();
+  const unfollowMutation = useUnfollow({ followableType });
   const { toggleDialog } = useLoginRequiredDialog();
   const handleFollow = () => {
     if (user) {
@@ -40,7 +40,7 @@ export default function FollowButton({
   if (follows.isLoading) {
     return (
       <Skeleton sx={props.sx} variant="rectangular">
-        <Button variant="contained">Follow</Button>
+        <Button variant="contained">Theo dõi</Button>
       </Skeleton>
     );
   }
@@ -54,7 +54,7 @@ export default function FollowButton({
         startIcon={<Check />}
         onClick={handleUnfollow}
       >
-        Following
+        Đang theo dõi
       </LoadingButton>
     ) : (
       <LoadingButton
@@ -64,7 +64,7 @@ export default function FollowButton({
         startIcon={<Add />}
         onClick={handleFollow}
       >
-        Follow
+        Theo dõi
       </LoadingButton>
     );
   }

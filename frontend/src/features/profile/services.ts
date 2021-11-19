@@ -5,7 +5,7 @@ import useSnackbar from "hooks/useSnackbar";
 import http from "lib/http";
 import { MutationConfig, QueryConfig } from "lib/react-query";
 import { useMutation, useQuery, useQueryClient } from "react-query";
-import { User, UserPreview } from "../types";
+import { User, UserPreview } from "./types";
 
 function fetchProfile(id?: string): Promise<User> {
   return http.get(`/users/${id}/profile`);
@@ -84,7 +84,7 @@ export function useUpdateProfile(
     onSuccess: async (data) => {
       await client.invalidateQueries(["profile", data.id]);
       await client.invalidateQueries("auth");
-      success("Profile updated");
+      success("Thông tin cá nhân được cập nhật");
     },
     ...config,
   });

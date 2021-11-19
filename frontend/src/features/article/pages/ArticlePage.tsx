@@ -1,14 +1,12 @@
 import { Grid, Paper, Typography } from "@mui/material";
 import { useAuth } from "features/auth/AuthenticationProvider";
-import { CommentBox } from "features/comment";
+import CommentBox from "features/comment/components/CommentBox";
 import CommentCard, {
   CommentCardSkeleton,
 } from "features/comment/components/CommentCard";
-import { useCreateComment } from "features/comment/services/useComment";
+import { useCreateComment } from "features/comment/services";
 import { Comment } from "features/comment/types";
-import useProfile, {
-  useUserArticles,
-} from "features/profile/services/useProfile";
+import useProfile, { useUserArticles } from "features/profile/services";
 import { FormikHelpers } from "formik";
 import useLoginRequiredDialog from "hooks/useLoginRequiredDialog";
 import React from "react";
@@ -19,12 +17,13 @@ import ArticleDetails, {
 import AuthorCard, { AuthorCardSkeleton } from "../components/AuthorCard";
 import Reactions from "../components/Reactions";
 import ReadMore, { ReadMoreSkeleton } from "../components/ReadMore";
-import ReadNext from "../components/ReadNext";
+import ReadNext, { ReadNextSkeleton } from "../components/ReadNext";
 import {
   useArticle,
   useArticleComments,
   useArticleReactions,
-} from "../services/useArticle";
+  useRecommendations,
+} from "../services";
 
 function CommentTree({
   comment,
@@ -51,13 +50,14 @@ export default function ArticlePage({
     id: article.data?.author.id,
     config: { enabled: article.isSuccess },
   });
-  const comments = useArticleComments({ id });
-  const reactions = useArticleReactions({ id });
-  const createComment = useCreateComment();
-  const userArticles = useUserArticles({
+  const moreArticles = useUserArticles({
     id: article.data?.author.id,
     config: { enabled: article.isSuccess },
   });
+  const nextArticles = useRecommendations({ id });
+  const comments = useArticleComments({ id });
+  const reactions = useArticleReactions({ id });
+  const createComment = useCreateComment();
   const { user } = useAuth();
   const { toggleDialog } = useLoginRequiredDialog();
   const handleSubmitComment = async (
@@ -92,7 +92,7 @@ export default function ArticlePage({
           )}
           <Paper sx={{ my: 2, p: { xs: 1, md: 2 } }}>
             <Typography fontWeight="bold" sx={{ mb: 2 }} id="comments">
-              Comments({article.data?.commentsCount || 0})
+              Bình luận({article.data?.commentsCount || 0})
             </Typography>
             <CommentBox onSubmit={handleSubmitComment} />
             {comments.isSuccess
@@ -100,10 +100,14 @@ export default function ArticlePage({
               : [...Array(5)].map((v, i) => <CommentCardSkeleton key={i} />)}
           </Paper>
           <Paper>
-            <Typography fontWeight="bold" sx={{ p: 2 }}>
-              Read Next
+            <Typography variant="h6" sx={{ p: 2 }}>
+              Đề xuất
             </Typography>
-            <ReadNext articleId={id} />
+            {nextArticles.isSuccess ? (
+              <ReadNext articles={nextArticles.data} />
+            ) : (
+              <ReadNextSkeleton />
+            )}
           </Paper>
         </Grid>
         <Grid item xs={12} lg={3}>
@@ -113,8 +117,11 @@ export default function ArticlePage({
             <AuthorCardSkeleton />
           )}
           <Paper sx={{ mt: 2 }}>
-            {userArticles.isSuccess ? (
-              <ReadMore author={author.data!} articles={userArticles.data} />
+            {moreArticles.isSuccess ? (
+              <ReadMore
+                author={author.data!}
+                articles={moreArticles.data.filter((a) => a.id != id)}
+              />
             ) : (
               <ReadMoreSkeleton />
             )}

@@ -48,12 +48,12 @@ export default function UploadButton({ onSelect, url, onRemove }: Props) {
             hidden
           />
           <Button component="span" variant="outlined">
-            {url ? "Change" : "Add a cover image"}
+            {url ? "Thay đổi" : "Thêm ảnh"}
           </Button>
         </label>
         {url && (
           <Button variant="text" color="error" onClick={handleRemove}>
-            Remove
+            Xóa
           </Button>
         )}
       </div>

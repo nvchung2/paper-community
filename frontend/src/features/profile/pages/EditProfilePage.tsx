@@ -6,10 +6,7 @@ import { useUploadImage } from "features/upload/useUpload";
 import { Form, Formik, FormikHelpers } from "formik";
 import React, { useState } from "react";
 import * as Yup from "yup";
-import useProfile, {
-  UpdateUser,
-  useUpdateProfile,
-} from "../services/useProfile";
+import useProfile, { UpdateUser, useUpdateProfile } from "../services";
 
 const FileInput = styled("input")(({ theme }) => ({
   width: "100%",
@@ -73,10 +70,10 @@ export default function EditProfilePage() {
     >
       {({ isSubmitting }) => (
         <Form>
-          <Typography variant="h4">Edit Profile</Typography>
+          <Typography variant="h4">Cập nhật thông tin cá nhân</Typography>
           <Paper sx={{ p: 2 }}>
             <FormGroup>
-              <Label htmlFor="profile-img">Profile image</Label>
+              <Label htmlFor="profile-img">Ảnh đại diện</Label>
               <Stack direction="row" alignItems="center" spacing={2}>
                 <Avatar
                   sx={{
@@ -85,9 +82,8 @@ export default function EditProfilePage() {
                     borderColor: "primary.main",
                     color: (theme) => theme.border,
                   }}
-                >
-                  C
-                </Avatar>
+                  src={user?.avatar}
+                />
                 <FileInput
                   type="file"
                   name="file"
@@ -98,9 +94,9 @@ export default function EditProfilePage() {
               </Stack>
             </FormGroup>
             <FormGroup>
-              <Label htmlFor="name">Name</Label>
+              <Label htmlFor="name">Tên hiển thị</Label>
               <FTextField
-                placeholder="Name..."
+                placeholder="Tên hiển thị..."
                 id="name"
                 name="name"
                 fullWidth
@@ -108,9 +104,9 @@ export default function EditProfilePage() {
               />
             </FormGroup>
             <FormGroup>
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email">Địa chỉ email</Label>
               <FTextField
-                placeholder="Email..."
+                placeholder="Địa chỉ email..."
                 name="email"
                 id="email"
                 fullWidth
@@ -118,40 +114,40 @@ export default function EditProfilePage() {
               />
             </FormGroup>
             <FormGroup>
-              <Label htmlFor="location">Location</Label>
+              <Label htmlFor="location">Vị trí</Label>
               <FTextField
                 name="location"
-                placeholder="Location..."
+                placeholder="Vị trí..."
                 id="location"
                 fullWidth
                 size="small"
               />
             </FormGroup>
             <FormGroup>
-              <Label htmlFor="bio">Bio</Label>
+              <Label htmlFor="bio">Giói thiệu</Label>
               <FTextField
                 name="bio"
-                placeholder="Bio..."
+                placeholder="Giói thiệu..."
                 id="bio"
                 fullWidth
                 size="small"
               />
             </FormGroup>
             <FormGroup>
-              <Label htmlFor="work">Work</Label>
+              <Label htmlFor="work">Nơi làm việc</Label>
               <FTextField
                 name="work"
-                placeholder="Work..."
+                placeholder="Nơi làm việc..."
                 id="work"
                 fullWidth
                 size="small"
               />
             </FormGroup>
             <FormGroup>
-              <Label htmlFor="github">Github</Label>
+              <Label htmlFor="github">Link Github</Label>
               <FTextField
                 name="githubLink"
-                placeholder="https://github.com..."
+                placeholder="https://github.com/jvjspy..."
                 id="github"
                 fullWidth
                 size="small"
@@ -163,7 +159,7 @@ export default function EditProfilePage() {
                 type="submit"
                 variant="contained"
               >
-                Save Profile Information
+                Cập nhật
               </LoadingButton>
             </Box>
           </Paper>

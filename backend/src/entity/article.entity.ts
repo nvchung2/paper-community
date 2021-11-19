@@ -29,8 +29,10 @@ export class Article extends BaseEntity {
   author: User;
   @BeforeInsert()
   private beforeInsert() {
-    this.readingTime = 0;
+    this.readingTime = Math.max(
+      Math.floor(this.content.split(/\s+|\t+|\n+/).length / 250),
+      1
+    );
     this.createdTime = new Date();
-    if (!this.coverImage) this.coverImage = "cover.png";
   }
 }

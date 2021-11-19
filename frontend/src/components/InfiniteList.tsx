@@ -8,13 +8,18 @@ interface Props<T> {
   queryResult: UseInfiniteQueryResult<PaginationQueryResult<T>>;
   renderPage: (page: T[]) => any;
   placeholder: ReactElement;
+  noContent?: ReactElement | null;
 }
 export default function InfiniteList<T>({
   queryResult,
   renderPage,
   placeholder,
+  noContent = null,
 }: Props<T>) {
   if (queryResult.isSuccess) {
+    if (queryResult.data.pages[0].list.length == 0) {
+      return noContent;
+    }
     return (
       <>
         {queryResult.data.pages.map((p) => renderPage(p.list))}
@@ -27,7 +32,7 @@ export default function InfiniteList<T>({
               variant="contained"
               onClick={() => queryResult.fetchNextPage()}
             >
-              Show more
+              Hiện thêm
             </Button>
           )}
         </Box>

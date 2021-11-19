@@ -3,6 +3,8 @@ import { getCustomRepository } from "typeorm";
 import { ArticleRepository } from "../repository/article.repository";
 import { CommentRepository } from "../repository/comment.repository";
 import { UserRepository } from "../repository/user.repository";
+import { searchValidators } from "../validator/search.validator";
+import { validate } from "../validator/validate.middleware";
 import { Controller, RouterConfig } from "./controller";
 
 export class SearchController extends Controller {
@@ -16,16 +18,19 @@ export class SearchController extends Controller {
         {
           method: "get",
           path: "/articles",
+          middlewares: [...searchValidators, validate],
           handler: this.searchArticles,
         },
         {
           method: "get",
           path: "/users",
+          middlewares: [...searchValidators, validate],
           handler: this.searchUsers,
         },
         {
           method: "get",
           path: "/comments",
+          middlewares: [...searchValidators, validate],
           handler: this.searchComments,
         },
       ],

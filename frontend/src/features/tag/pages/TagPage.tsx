@@ -7,18 +7,17 @@ import {
   Tabs,
   Typography,
 } from "@mui/material";
-import ContentLoader from "components/ContentLoader";
 import InfiniteList from "components/InfiniteList";
-import { ArticleCard } from "features/article";
+import ArticleCard from "features/article/components/ArticleCard";
 import { ArticleCardSekeleton } from "features/article/components/ArticleCard";
 import { Article } from "features/article/types";
 import React, { useState } from "react";
 import { RouteComponentProps } from "react-router";
-import { useTag, useTagArticles } from "../services/useTag";
+import { useTag, useTagArticles } from "../services";
 import TagCard, { TagCardSkeleton } from "../TagCard";
 const filters = ["week", "month", "year"] as const;
 const sorters = ["oldest", "latest"] as const;
-const tabs = ["Week", "Month", "Year", "Oldest", "Latest"];
+const tabs = ["Trong tuần", "Trong tháng", "Trong năm", "Cũ nhất", "Mới nhất"];
 export default function TagPage({
   match,
 }: RouteComponentProps<{ id: string }>) {
@@ -52,7 +51,7 @@ export default function TagPage({
         my={1}
       >
         <Typography variant="h2" fontWeight="bold" fontSize="h6.fontSize">
-          Articles
+          Tất cả bài viết
         </Typography>
         <Tabs
           value={activeTab}

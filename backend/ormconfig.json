@@ -4,7 +4,7 @@
   "port": 5432,
   "username": "postgres",
   "password": "root",
-  "database": "testdb",
+  "database": "postgres",
   "synchronize": false,
   "dropSchema": false,
   "logging": true,

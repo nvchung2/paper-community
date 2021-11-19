@@ -17,42 +17,45 @@ import { Link } from "react-router-dom";
 const menu = [
   {
     Icon: HomeIcon,
-    text: "Home",
+    text: "Trang chủ",
     to: "/",
   },
   {
     Icon: InboxIcon,
-    text: "Reading List",
+    text: "Lưu trữ",
     to: "/reading-list",
   },
   {
     Icon: TagIcon,
-    text: "Tags",
+    text: "Danh sách thẻ",
     to: "/tag",
   },
   {
     Icon: BulbIcon,
-    text: "FAQ",
+    text: "Câu hỏi thường gặp",
     to: "/faq",
   },
   {
     Icon: ContactIcon,
-    text: "Contacts",
+    text: "Liên hệ",
     to: "/contact",
   },
   {
     Icon: HeartIcon,
-    text: "About",
+    text: "Về chúng tôi",
     to: "/about",
   },
 ];
-export default function SideMenu() {
+interface Props {
+  onItemClick?: () => any;
+}
+export default function SideMenu({ onItemClick }: Props) {
   return (
     <nav>
       <List subheader={<ListSubheader>Paper Community</ListSubheader>}>
         {menu.map((item) => (
           <ListItem key={item.text}>
-            <ListItemButton component={Link} to={item.to}>
+            <ListItemButton component={Link} to={item.to} onClick={onItemClick}>
               <ListItemIcon>
                 <item.Icon />
               </ListItemIcon>

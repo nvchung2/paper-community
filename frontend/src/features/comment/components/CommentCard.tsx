@@ -25,12 +25,12 @@ import useLoginRequiredDialog from "hooks/useLoginRequiredDialog";
 import { timeAgo } from "lib/utils";
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import { CommentBox } from "..";
+import CommentBox from "./CommentBox";
 import {
   useCreateComment,
   useDeleteComment,
   useUpdateComment,
-} from "../services/useComment";
+} from "../services";
 import { Comment } from "../types";
 import StyledAvatar from "./StyledAvatar";
 
@@ -151,7 +151,7 @@ export default function CommentCard({
                   {user?.id == comment.author.id && (
                     <MenuItem>
                       <ListItemText
-                        primary="Edit"
+                        primary="Sửa"
                         onClick={() => handleMenuSelect("edit")}
                       />
                     </MenuItem>
@@ -161,18 +161,18 @@ export default function CommentCard({
                       <ConfirmDialog
                         actionButton={
                           <ListItemText
-                            primary="Delete"
+                            primary="Xóa"
                             onClick={() => handleMenuSelect("delete")}
                           />
                         }
-                        message="Are you sure you want to delete this comment?"
+                        message="Bạn có chắc muốn xóa bình luận này?"
                         onAccept={handleDelete}
                       />
                     </MenuItem>
                   )}
                   <MenuItem>
                     <ListItemText
-                      primary="Report"
+                      primary="Báo cáo"
                       onClick={() => handleMenuSelect("report")}
                     />
                   </MenuItem>
@@ -196,7 +196,7 @@ export default function CommentCard({
               startIcon={<CommentIcon />}
               onClick={() => setShowCommentBox(true)}
             >
-              {comment.children.length}
+              {comment.childrenCount}
             </Button>
           </CardActions>
         </Card>

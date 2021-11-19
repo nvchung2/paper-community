@@ -3,7 +3,7 @@ import React from "react";
 interface Props {
   message?: string;
 }
-export default function PageLoader({ message = "Loading..." }: Props) {
+export default function PageLoader({ message = "Đang tải..." }: Props) {
   return (
     <Backdrop
       open

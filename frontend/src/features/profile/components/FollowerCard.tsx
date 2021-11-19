@@ -30,7 +30,7 @@ export function FollowerCardSkeleton() {
             <Skeleton sx={{ flexGrow: 1, mr: 2 }} />
             <Skeleton variant="rectangular">
               <Button variant="contained" startIcon={<Add />}>
-                Follow
+                Theo dõi
               </Button>
             </Skeleton>
           </Box>

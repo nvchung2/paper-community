@@ -1,13 +1,5 @@
-import {
-  Alert,
-  AlertTitle,
-  Divider,
-  Grid,
-  Link as MuiLink,
-  Tab,
-  Tabs,
-  Typography,
-} from "@mui/material";
+import { Divider, Grid, Tab, Tabs, Typography } from "@mui/material";
+import coverImage from "assets/cover.jpg";
 import ConfirmDialog from "components/ConfirmDialog";
 import LoadingButton from "components/LoadingButton";
 import PageLoader from "components/PageLoader";
@@ -16,14 +8,13 @@ import { useUploadImage } from "features/upload/useUpload";
 import { FormikHelpers } from "formik";
 import React, { SyntheticEvent, useState } from "react";
 import { RouteComponentProps } from "react-router";
-import { Link } from "react-router-dom";
 import ArticleEditor from "../components/ArticleEditor";
 import {
   useArticle,
   useCreateArticle,
   useDeleteArticle,
   useUpdateArticle,
-} from "../services/useArticle";
+} from "../services";
 import { CreateOrUpdateArticle } from "../types";
 type Params = { action: "new" | "edit"; id: string };
 export default function ArticleEditorPage({
@@ -49,50 +40,40 @@ export default function ArticleEditorPage({
     file: File | undefined,
     helper: FormikHelpers<CreateOrUpdateArticle>
   ) => {
-    if (file) {
-      const { url } = await upload.mutateAsync(file);
-      article.coverImage = url;
+    try {
+      if (file) {
+        const { url } = await upload.mutateAsync(file);
+        article.coverImage = url;
+      }
+      if (article.coverImage == "") {
+        article.coverImage = coverImage;
+      }
+      if (isEdit) {
+        await updateArticle.mutateAsync(article);
+      } else {
+        await createArticle.mutateAsync(article);
+      }
+      helper.resetForm();
+      history.push(`/profile/${user!.id}/articles`);
+    } catch {
+      helper.setSubmitting(false);
     }
-    if (isEdit) {
-      await updateArticle.mutateAsync(article);
-    } else {
-      await createArticle.mutateAsync(article);
-    }
-    helper.setSubmitting(false);
-    helper.resetForm();
-    history.push(`/profile/${user!.id}/articles`);
   };
   const handleDelete = async () => {
     await deleteArticle.mutateAsync(match.params.id);
     history.push(`/profile/${user!.id}/articles`);
   };
-  if (isEdit) {
-    if (article.isLoading) {
-      return <PageLoader message="Loading article data..." />;
-    }
-    if (
-      (article.isError && article.error.response?.status == 404) ||
-      (article.isSuccess && article.data.author.id != user?.id)
-    ) {
-      return (
-        <Alert severity="error">
-          <AlertTitle>404 - NOT FOUND</AlertTitle>
-          Sorry! We can not found your article.{" "}
-          <MuiLink component={Link} to="/">
-            Go Home
-          </MuiLink>
-        </Alert>
-      );
-    }
+  if (isEdit && article.isLoading) {
+    return <PageLoader message="Đang tải dữ liệu bài viết..." />;
   }
   return (
     <>
       <Typography variant="h4">
-        {isEdit ? "Edit Article" : "Create New Article"}
+        {isEdit ? "Sửa bài viết" : "Tạo bài viết mới"}
       </Typography>
       <Tabs value={activeTab} sx={{ mb: 2 }} onChange={handleTabChange}>
-        <Tab label="Edit" />
-        <Tab label="Preview" />
+        <Tab label="Biên tập" />
+        <Tab label="Xem trước" />
       </Tabs>
       <Grid container spacing={2}>
         <Grid item xs={12} md={9}>
@@ -103,13 +84,8 @@ export default function ArticleEditorPage({
           />
         </Grid>
         <Grid item md={3} sx={{ display: ["none", null, "block"] }}>
-          <Typography variant="h6">Writing a great post title</Typography>
-          <Typography variant="caption">
-            Think of your post title as a super short (but compelling!)
-            description — like an overview of the actual post in one short
-            sentence. Use keywords where appropriate to help ensure people can
-            find your post by search.
-          </Typography>
+          <Typography variant="h6">Hỗ trợ cú pháp markdown</Typography>
+          <Typography variant="caption">Some markdown guide here</Typography>
         </Grid>
         {isEdit && (
           <Grid item xs={12} md={9}>
@@ -121,7 +97,7 @@ export default function ArticleEditorPage({
                 mb: 2,
               }}
             >
-              DANGER ZONE
+              Nguy hiểm!
             </Divider>
             <ConfirmDialog
               actionButton={
@@ -131,10 +107,10 @@ export default function ArticleEditorPage({
                   variant="outlined"
                   color="error"
                 >
-                  Delete this article
+                  Xóa bài viết này
                 </LoadingButton>
               }
-              message="Are you sure you want to delete this article?"
+              message="Bạn có chắc muốn xóa bài viết này?"
               onAccept={handleDelete}
             />
           </Grid>

@@ -1,4 +1,5 @@
 import { UserPreview } from "features/profile/types";
+import { Reaction } from "features/reaction/types";
 
 export type Notification = {
   id: string;
@@ -14,8 +15,10 @@ export type Notification = {
     }
   | {
       notifiableType: "react";
-      data:
-        | { targetType: "article"; id: string }
-        | { targetType: "comment"; id: string; articleId: string };
+      data: { id: string } & Pick<Reaction, "type"> &
+        (
+          | { targetType: "article" }
+          | { targetType: "comment"; articleId: string }
+        );
     }
 );

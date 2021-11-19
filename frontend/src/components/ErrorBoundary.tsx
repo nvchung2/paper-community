@@ -29,10 +29,10 @@ export default class ErrorBoundary extends Component<
             </Typography>
           </Box>
           <Typography variant="h6">
-            {error.response?.statusText || "Unknown Error"}
+            {error.response?.statusText || "Lỗi hệ thống"}
           </Typography>
           <Link href="/" variant="h6">
-            Return to home page
+            Trở về trang chủ
           </Link>
         </Box>
       );

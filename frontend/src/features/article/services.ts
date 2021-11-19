@@ -14,7 +14,7 @@ import {
   useQueryClient,
 } from "react-query";
 import { PaginationQuery, PaginationQueryResult, SortQuery } from "types";
-import { Article, CreateOrUpdateArticle } from "../types";
+import { Article, CreateOrUpdateArticle } from "./types";
 
 function createArticle(data: CreateOrUpdateArticle): Promise<Article> {
   return http.post("/articles", data);
@@ -60,7 +60,7 @@ export function useCreateArticle(
     mutationFn: createArticle,
     onSuccess: async () => {
       await client.invalidateQueries("article");
-      success("Article created");
+      success("Bài viết được xuất bản");
     },
     ...config,
   });
@@ -101,7 +101,7 @@ export function useUpdateArticle({ id, config }: UseUpdateArticleOptions) {
     mutationFn: (data: CreateOrUpdateArticle) => updateArticle(id, data),
     onSuccess: async (data) => {
       await client.invalidateQueries(["article", data.id]);
-      success("Article updated");
+      success("Bài viết được cập nhật");
     },
     ...config,
   });
@@ -115,8 +115,9 @@ export function useDeleteArticle(
     mutationFn: deleteArticle,
     onSuccess: async (_, id) => {
       client.removeQueries(["article", id]);
+      client.removeQueries(["comment", "article", id]);
       await client.invalidateQueries("article");
-      success("Article deleted");
+      success("Bài viết bị xóa");
     },
     ...config,
   });

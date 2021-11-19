@@ -1,6 +1,6 @@
 import { Box, Button, Stack } from "@mui/material";
-import FTextField from "components/FTextField";
 import LoadingButton from "components/LoadingButton";
+import RichTextField from "components/RichTextField";
 import { useAuth } from "features/auth/AuthenticationProvider";
 import { Form, Formik, FormikHelpers } from "formik";
 import React from "react";
@@ -17,7 +17,7 @@ interface Props {
   onDismiss?: () => any;
 }
 const schema = Yup.object({
-  content: Yup.string().required().min(3).max(300),
+  content: Yup.string().required().min(1),
 });
 export default function CommentBox({
   onSubmit,
@@ -38,11 +38,15 @@ export default function CommentBox({
           onSubmit={onSubmit}
           validationSchema={schema}
         >
-          {({ isSubmitting, resetForm }) => (
+          {({ isSubmitting, resetForm, values, setFieldValue }) => (
             <Form>
-              <FTextField
+              <RichTextField
+                enableEmoji
+                onSelectEmoji={(emoji) =>
+                  setFieldValue("content", values.content + emoji)
+                }
                 name="content"
-                placeholder="Enter your comment here..."
+                placeholder="Nhập nội dung bình luận..."
                 multiline
                 rows={5}
                 fullWidth
@@ -54,7 +58,7 @@ export default function CommentBox({
                 variant="contained"
                 type="submit"
               >
-                Submit
+                Bình luận
               </LoadingButton>
               <Button
                 sx={{ mr: 1 }}
@@ -66,7 +70,7 @@ export default function CommentBox({
                   onDismiss?.();
                 }}
               >
-                Dismiss
+                Xóa
               </Button>
             </Form>
           )}

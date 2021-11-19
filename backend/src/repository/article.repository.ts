@@ -1,11 +1,12 @@
 import {
+  AbstractRepository,
   EntityRepository,
   getConnection,
   getCustomRepository,
-  Repository,
   SelectQueryBuilder,
 } from "typeorm";
 import { Article } from "../entity/article.entity";
+import { Comment } from "../entity/comment.entity";
 import { Tag } from "../entity/tag.entity";
 import { User } from "../entity/user.entity";
 import { CommentRepository } from "./comment.repository";
@@ -24,15 +25,31 @@ type CreateOrUpdateArticle = Pick<
   "title" | "coverImage" | "content" | "tags"
 >;
 @EntityRepository(Article)
-export class ArticleRepository extends Repository<Article> {
+export class ArticleRepository extends AbstractRepository<Article> {
+  static selectArticlePreview(alias = "article") {
+    return [
+      "id",
+      "title",
+      "content",
+      "coverImage",
+      "commentsCount",
+      "readingTime",
+      "createdTime",
+      "reactionsCount",
+      "author",
+    ].map((s) => `${alias}.${s}`);
+  }
   private tagRepo = getCustomRepository(TagRepository);
   private commentRepo = getCustomRepository(CommentRepository);
-  private fetchArticleRelations(qb: SelectQueryBuilder<Article>) {
+  private fetchArticleRelations(
+    qb: SelectQueryBuilder<Article>,
+    isPreview = true
+  ) {
     return qb
       .innerJoinAndSelect("article.author", "author")
       .innerJoinAndSelect("article.tags", "tag")
       .select([
-        "article",
+        ...(isPreview ? ArticleRepository.selectArticlePreview() : ["article"]),
         ...TagRepository.selectTagPreview(),
         ...UserRepository.selectUserPreview("author"),
       ]);
@@ -90,7 +107,7 @@ export class ArticleRepository extends Repository<Article> {
     const qb = this.createQueryBuilder("article").where("article.id=:id", {
       id,
     });
-    return this.fetchArticleRelations(qb).getOne();
+    return this.fetchArticleRelations(qb, false).getOne();
   }
   findByIdAndAuthorId(id: string, authorId: string) {
     return this.createQueryBuilder("article")
@@ -98,35 +115,26 @@ export class ArticleRepository extends Repository<Article> {
       .andWhere("article.authorId=:authorId", { authorId })
       .getOne();
   }
-  private async createOrFetchTags(tags: Tag[]) {
-    for (let i = 0; i < tags.length; i++) {
-      const tagName = tags[i].name;
-      let tag = await this.tagRepo.findByName(tagName);
-      if (!tag) {
-        tag = this.tagRepo.create({ name: tagName });
-        await this.tagRepo.save(tag);
-      }
-      tags[i] = tag;
-    }
-    return tags;
-  }
   createArticle(user: User, dto: CreateOrUpdateArticle) {
     return getConnection().transaction(async () => {
-      const tags = await this.createOrFetchTags(dto.tags);
-      const article = this.create({
+      const tags = await this.tagRepo.createOrFetchTags(dto.tags);
+      const article = this.repository.create({
         author: user,
         content: dto.content,
         coverImage: dto.coverImage,
         title: dto.title,
         tags,
       });
-      await this.save(article);
-      const rootComment = this.commentRepo.create({
-        article,
-        content: "Root comment",
-        author: article.author,
-      });
-      await this.commentRepo.save(rootComment);
+      await this.repository.save(article);
+      await this.commentRepo.createComment(
+        user,
+        {
+          articleId: article.id,
+          content: "Root comment",
+        },
+        undefined,
+        true
+      );
       return article;
     });
   }
@@ -135,15 +143,15 @@ export class ArticleRepository extends Repository<Article> {
     if (!article) {
       return;
     }
-    const tags = await this.createOrFetchTags(dto.tags);
+    const tags = await this.tagRepo.createOrFetchTags(dto.tags);
     article.title = dto.title;
     article.content = dto.content;
     article.coverImage = dto.coverImage;
     article.tags = tags;
-    return this.save(article);
+    return this.repository.save(article);
   }
   deleteArticle(user: User, id: string) {
-    return this.delete({
+    return this.repository.delete({
       id,
       author: user,
     });
@@ -151,7 +159,9 @@ export class ArticleRepository extends Repository<Article> {
   findSavedArticles(id: string) {
     const qb = this.createQueryBuilder("article")
       .innerJoin("reaction", "reaction", "reaction.reactableId=article.id")
-      .where("reaction.userId=:id", { id });
+      .where("reaction.userId=:id", { id })
+      .andWhere("reaction.reactableType='article'")
+      .andWhere("type='save'");
     return this.fetchArticleRelations(qb).getMany();
   }
   async findFeedArticles({
@@ -191,17 +201,19 @@ export class ArticleRepository extends Repository<Article> {
     const article = await this.findById(id);
     if (article) {
       const tagIds = article.tags.map((t) => t.id);
-      const qb = this.createQueryBuilder("article").where((qb) => {
-        return (
-          "article.id in " +
-          qb
-            .subQuery()
-            .select("taa.articleId")
-            .from("tag_articles_article", "taa")
-            .where("taa.tagId in (:...tagIds)", { tagIds })
-            .getQuery()
-        );
-      });
+      const qb = this.createQueryBuilder("article")
+        .where((qb) => {
+          return (
+            "article.id in " +
+            qb
+              .subQuery()
+              .select("taa.articleId")
+              .from("tag_articles_article", "taa")
+              .where("taa.tagId in (:...tagIds)", { tagIds })
+              .getQuery()
+          );
+        })
+        .andWhere("article.id!=:id", { id });
       return this.fetchArticleRelations(qb).take(5).getMany();
     }
   }
@@ -213,5 +225,11 @@ export class ArticleRepository extends Repository<Article> {
     sort &&
       qb.orderBy("article.createdTime", sort == "latest" ? "DESC" : "ASC");
     return this.fetchArticleRelations(qb).getMany();
+  }
+  updateViewsCount(id: string) {
+    return this.repository.query(
+      `update article set "viewsCount"="viewsCount"+1 where id=$1`,
+      [id]
+    );
   }
 }

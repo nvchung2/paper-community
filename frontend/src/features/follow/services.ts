@@ -2,7 +2,7 @@ import useSnackbar from "hooks/useSnackbar";
 import http from "lib/http";
 import { MutationConfig, QueryConfig } from "lib/react-query";
 import { useMutation, useQuery, useQueryClient } from "react-query";
-import { Follow } from "../types";
+import { Follow } from "./types";
 
 type NormalizedFollow = Record<
   "user" | "tag",
@@ -37,21 +37,29 @@ export function useCreateFollow(config?: MutationConfig<typeof createFollow>) {
   const client = useQueryClient();
   return useMutation({
     mutationFn: createFollow,
-    onSuccess: async () => {
+    onSuccess: async (_, { followableType }) => {
       await client.invalidateQueries("follow");
-      success("Following");
+      await client.invalidateQueries(followableType);
+      success(`Đang theo dõi ${followableType == "tag" ? "thẻ" : "người"} này`);
     },
     ...config,
   });
 }
-export function useUnfollow(config?: MutationConfig<typeof unFollow>) {
+interface UseUnfollowOptions {
+  followableType: string;
+  config?: MutationConfig<typeof unFollow>;
+}
+export function useUnfollow({ followableType, config }: UseUnfollowOptions) {
   const { success } = useSnackbar();
   const client = useQueryClient();
   return useMutation({
     mutationFn: unFollow,
     onSuccess: async () => {
       await client.invalidateQueries("follow");
-      success("Unfollowed");
+      await client.invalidateQueries(followableType);
+      success(
+        `Đã hủy theo dõi ${followableType == "tag" ? "thẻ" : "người"} này`
+      );
     },
     ...config,
   });

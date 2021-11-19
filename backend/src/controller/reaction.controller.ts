@@ -5,6 +5,8 @@ import { CommentRepository } from "../repository/comment.repository";
 import { NotificationRepository } from "../repository/notification.repository";
 import { ReactionRepository } from "../repository/reaction.repository";
 import { requireAuth } from "../security/requireAuth.middleware";
+import { reactionValidators } from "../validator/reaction.validator";
+import { validate } from "../validator/validate.middleware";
 import { Controller, RouterConfig } from "./controller";
 
 export class ReactionController extends Controller {
@@ -23,7 +25,7 @@ export class ReactionController extends Controller {
         },
         {
           method: "post",
-          middlewares: [requireAuth],
+          middlewares: [requireAuth, ...reactionValidators, validate],
           handler: this.createReaction,
         },
         {
@@ -45,13 +47,12 @@ export class ReactionController extends Controller {
   }
   async createReaction(req: Request) {
     const user = this.extractCurrentUser(req);
-    const reaction = this.reactionRepo.create({
+    const reaction = await this.reactionRepo.createReaction(user, {
       reactableId: req.body.reactableId,
       reactableType: req.body.reactableType,
       type: req.body.type,
-      user,
     });
-    await this.reactionRepo.save(reaction);
+    if (!reaction) throw new Error();
     const targets = [
       reaction.reactableType == "article"
         ? (await this.articleRepo.findById(reaction.reactableId))!.author.id
@@ -65,10 +66,12 @@ export class ReactionController extends Controller {
           reaction.reactableType == "article"
             ? {
                 targetType: "article",
+                type: reaction.type,
                 id: reaction.reactableId,
               }
             : {
                 targetType: "comment",
+                type: reaction.type,
                 id: reaction.reactableId,
                 articleId: (await this.commentRepo.findById(
                   reaction.reactableId

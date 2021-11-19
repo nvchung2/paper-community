@@ -1,5 +1,6 @@
 import { AbstractRepository, EntityRepository } from "typeorm";
 import { Notification } from "../entity/notification.entity";
+import { Reaction } from "../entity/reaction.entity";
 import { User } from "../entity/user.entity";
 import { UserRepository } from "./user.repository";
 export type NotifyDTO = {
@@ -14,9 +15,18 @@ export type NotifyDTO = {
     }
   | {
       notifiableType: "react";
-      data:
-        | { targetType: "article"; id: string }
-        | { targetType: "comment"; id: string; articleId: string };
+      data: {
+        id: string;
+      } & Pick<Reaction, "type"> &
+        (
+          | {
+              targetType: "article";
+            }
+          | {
+              targetType: "comment";
+              articleId: string;
+            }
+        );
     }
 ) &
   Pick<Notification, "notifiableId">;
@@ -38,7 +48,7 @@ export class NotificationRepository extends AbstractRepository<Notification> {
   }
   notify(dto: NotifyDTO) {
     const values = dto.targets.map((targetId) => {
-      return this.manager.create(Notification, {
+      return this.repository.create({
         data: dto.data,
         notifiableId: dto.notifiableId,
         notifiableType: dto.notifiableType,
@@ -46,12 +56,12 @@ export class NotificationRepository extends AbstractRepository<Notification> {
         targetId,
       });
     });
-    return this.manager.save(values);
+    return this.repository.save(values);
   }
   markUserNotificationsAsRead(id: string) {
-    return this.manager
+    return this.repository
       .createQueryBuilder()
-      .update(Notification)
+      .update()
       .set({
         read: true,
       })

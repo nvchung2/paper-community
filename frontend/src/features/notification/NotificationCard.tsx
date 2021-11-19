@@ -1,3 +1,4 @@
+import { AutoAwesome, Favorite, Save, Star } from "@mui/icons-material";
 import {
   Avatar,
   Card,
@@ -6,13 +7,21 @@ import {
   Skeleton,
 } from "@mui/material";
 import HashLink from "components/HashLink";
+import { Reaction } from "features/reaction/types";
 import { timeAgo } from "lib/utils";
 import React from "react";
+import { ReactElement } from "react-markdown/lib/react-markdown";
 import { Link } from "react-router-dom";
 import { Notification } from "./types";
 interface Props {
   noti: Notification;
 }
+const reactionIconMap: Record<Pick<Reaction, "type">["type"], ReactElement> = {
+  awesome: <AutoAwesome color="secondary" />,
+  heart: <Favorite color="secondary" />,
+  save: <Save color="secondary" />,
+  star: <Star color="secondary" />,
+};
 export function NotificationCardSkeleton() {
   return (
     <Card sx={{ p: 2, borderLeft: 5, borderLeftColor: "primary.main", mb: 2 }}>
@@ -44,43 +53,45 @@ export default function NotificationCard({ noti }: Props) {
       case "article":
         return (
           <>
-            {userLink} created a new{" "}
-            {renderLink(`/article/${noti.notifiableId}`, "Article.")}
+            {userLink} đã tạo một{" "}
+            {renderLink(`/article/${noti.notifiableId}`, "Bài viết")} mới.
           </>
         );
       case "follow":
-        return <>{userLink} has started followed you.</>;
+        return <>{userLink} bắt đầu theo dõi bạn.</>;
       case "comment":
         return (
           <>
-            {userLink} created a new{" "}
+            {userLink} đã tạo một{" "}
             {renderLink(
               `/article/${noti.data.articleId}#${noti.notifiableId}`,
-              "Comment"
+              "Bình luận"
             )}{" "}
-            on your article.
+            mới trên một bài viết của bạn.
           </>
         );
       case "reply":
         return (
           <>
-            {userLink} replied your{" "}
+            {userLink} đã trả lời một{" "}
             {renderLink(
               `/article/${noti.data.articleId}#${noti.notifiableId}`,
-              "Comment"
-            )}
+              "Bình luận"
+            )}{" "}
+            của bạn.
           </>
         );
       case "react":
         return (
           <>
-            {userLink} reacted to your{" "}
+            {userLink} đã cho bạn một {reactionIconMap[noti.data.type]} vì{" "}
             {noti.data.targetType == "article"
-              ? renderLink(`/article/${noti.data.id}`, "Article")
+              ? renderLink(`/article/${noti.data.id}`, "Bài viết")
               : renderLink(
                   `/article/${noti.data.articleId}#${noti.data.id}`,
-                  "Comment"
-                )}
+                  "Bình luận"
+                )}{" "}
+            của bạn.
           </>
         );
     }

@@ -18,6 +18,7 @@ export class Comment extends BaseEntity {
   @Column() content: string;
   @Column({ type: "timestamptz" }) createdTime: Date;
   @Column({ type: "int", default: 0 }) heartsCount: string;
+  @Column({ type: "int", default: 0 }) childrenCount: number;
   @Column() articleId: string;
   @ManyToOne(() => Article, (a) => a.comments, { onDelete: "CASCADE" })
   article: Article;

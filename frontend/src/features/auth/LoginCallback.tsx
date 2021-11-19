@@ -17,6 +17,6 @@ export default function LoginCallback({
     } else {
       history.push("/login");
     }
-  }, []);
-  return <PageLoader message="Logging in..." />;
+  }, [location, history, login]);
+  return <PageLoader message="Đang đăng nhập..." />;
 }

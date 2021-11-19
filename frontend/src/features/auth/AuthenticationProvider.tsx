@@ -3,7 +3,7 @@ import { UserPreview } from "features/profile/types";
 import useToken from "hooks/useToken";
 import { createContext, ReactNode, useContext } from "react";
 import { useQueryClient } from "react-query";
-import useAuthUser from "./services/useAuthUser";
+import useAuthUser from "./services";
 
 interface ContextValues {
   user: UserPreview | undefined;

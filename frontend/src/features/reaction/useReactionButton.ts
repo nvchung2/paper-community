@@ -1,10 +1,6 @@
 import { useAuth } from "features/auth/AuthenticationProvider";
 import useLoginRequiredDialog from "hooks/useLoginRequiredDialog";
-import {
-  useCreateReaction,
-  useReaction,
-  useRemoveReaction,
-} from "./services/useReaction";
+import { useCreateReaction, useReaction, useRemoveReaction } from "./services";
 import { Reaction } from "./types";
 
 export function useReactionButton({

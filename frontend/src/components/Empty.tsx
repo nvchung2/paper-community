@@ -5,7 +5,7 @@ interface Props {
   height?: string | number;
   message?: string;
 }
-export default function Empty({ height = 100, message = "Empty" }: Props) {
+export default function Empty({ height = 100, message = "<Trống>" }: Props) {
   return (
     <Stack
       justifyContent="center"

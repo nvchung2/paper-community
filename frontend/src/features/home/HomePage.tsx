@@ -1,11 +1,12 @@
 import { Grid, Tab, Tabs } from "@mui/material";
+import Empty from "components/Empty";
 import InfiniteList from "components/InfiniteList";
-import { ArticleCard } from "features/article";
+import ArticleCard from "features/article/components/ArticleCard";
 import { ArticleCardSekeleton } from "features/article/components/ArticleCard";
-import { useArticles, useFeed } from "features/article/services/useArticle";
+import { useArticles, useFeed } from "features/article/services";
 import { Article } from "features/article/types";
 import { useAuth } from "features/auth/AuthenticationProvider";
-import { SideMenu } from "features/layout";
+import SideMenu from "features/layout/components/SideMenu";
 import React, { useState } from "react";
 import TopTags from "./TopTags";
 import TopUsers from "./TopUsers";
@@ -13,11 +14,14 @@ import TopUsers from "./TopUsers";
 export default function HomePage() {
   const [activeTab, setActiveTab] = useState(0);
   const { user } = useAuth();
-  const labels = ["Latest", "Top"];
-  user && labels.unshift("Feed");
-  const isFeedTab = labels[activeTab] == "Feed";
+  const labels = [
+    { value: "latest", text: "Mới nhất" },
+    { value: "top", text: "Xem nhiều" },
+  ];
+  user && labels.unshift({ value: "feed", text: "Bảng tin" });
+  const isFeedTab = labels[activeTab].value == "feed";
   const feed = useFeed({ enabled: !!user && isFeedTab });
-  const sort = labels[activeTab].toLowerCase();
+  const sort = labels[activeTab].value;
   const articles = useArticles({ sort, config: { enabled: !isFeedTab } });
   const renderArticleList = () => {
     const renderPage = (list: Article[]) =>
@@ -28,6 +32,12 @@ export default function HomePage() {
           queryResult={feed}
           placeholder={<ArticleCardSekeleton />}
           renderPage={renderPage}
+          noContent={
+            <Empty
+              message="Không có bài viết nào trong bảng tin. Hãy theo dõi thẻ hoặc mọi người và các bài viết sẽ được hiển thị ở đây."
+              height="40vh"
+            />
+          }
         />
       );
     }
@@ -53,7 +63,7 @@ export default function HomePage() {
           onChange={(e, v) => setActiveTab(v)}
         >
           {labels.map((l) => (
-            <Tab key={l} label={l} />
+            <Tab key={l.value} label={l.text} />
           ))}
         </Tabs>
         {articleList}

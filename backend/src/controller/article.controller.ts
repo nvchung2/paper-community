@@ -7,6 +7,7 @@ import { FollowRepository } from "../repository/follow.repository";
 import { NotificationRepository } from "../repository/notification.repository";
 import { ReactionRepository } from "../repository/reaction.repository";
 import { requireAuth } from "../security/requireAuth.middleware";
+import { articleValidators } from "../validator/article.validator";
 import { paginationValidators } from "../validator/pagination.validator";
 import { validate } from "../validator/validate.middleware";
 import { Controller, RouterConfig } from "./controller";
@@ -22,7 +23,7 @@ export class ArticleController extends Controller {
       handlers: [
         {
           method: "post",
-          middlewares: [requireAuth],
+          middlewares: [requireAuth, ...articleValidators, validate],
           handler: this.createArticle,
         },
         {
@@ -50,7 +51,7 @@ export class ArticleController extends Controller {
         {
           path: "/:id",
           method: "put",
-          middlewares: [requireAuth],
+          middlewares: [requireAuth, ...articleValidators, validate],
           handler: this.updateArticle,
         },
         {
@@ -96,19 +97,23 @@ export class ArticleController extends Controller {
     const targets = (await this.followRepo.findUserFollowers(user.id)).map(
       (f) => f.user.id
     );
-    await this.notiRepo.notify({
-      notifiableId: article.id,
-      notifiableType: "article",
-      source: user,
-      targets,
-    });
+    this.notiRepo
+      .notify({
+        notifiableId: article.id,
+        notifiableType: "article",
+        source: user,
+        targets,
+      })
+      .catch(console.log);
     return {
       status: 201,
       json: article,
     };
   }
   async getArticle(req: Request) {
-    const article = await this.articleRepo.findById(req.params.id);
+    const id = req.params.id;
+    this.articleRepo.updateViewsCount(id).catch(console.log);
+    const article = await this.articleRepo.findById(id);
     if (article) {
       return {
         json: article,
@@ -156,6 +161,7 @@ export class ArticleController extends Controller {
   }
   async getArticleComments(req: Request) {
     const comments = await this.commentRepo.findArticleComments(req.params.id);
+    console.log(comments);
     if (comments) {
       return { json: comments };
     }

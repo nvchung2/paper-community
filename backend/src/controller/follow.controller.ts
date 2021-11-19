@@ -3,6 +3,8 @@ import { getCustomRepository } from "typeorm";
 import { FollowRepository } from "../repository/follow.repository";
 import { NotificationRepository } from "../repository/notification.repository";
 import { requireAuth } from "../security/requireAuth.middleware";
+import { followValidators } from "../validator/follow.validator";
+import { validate } from "../validator/validate.middleware";
 import { Controller, RouterConfig } from "./controller";
 
 export class FollowController extends Controller {
@@ -19,7 +21,7 @@ export class FollowController extends Controller {
         },
         {
           method: "post",
-          middlewares: [requireAuth],
+          middlewares: [requireAuth, followValidators, validate],
           handler: this.createFollow,
         },
         {
@@ -41,18 +43,19 @@ export class FollowController extends Controller {
   }
   async createFollow(req: Request) {
     const user = this.extractCurrentUser(req);
-    const follow = this.followRepo.create({
+    const follow = await this.followRepo.createFollow(user, {
       followableId: req.body.followableId,
       followableType: req.body.followableType,
-      user,
     });
-    if (await this.followRepo.createFollow(follow)) {
-      this.notiRepo.notify({
-        notifiableId: follow.id,
-        notifiableType: "follow",
-        source: user,
-        targets: [follow.followableId],
-      });
+    if (follow && follow.followableType == "user") {
+      this.notiRepo
+        .notify({
+          notifiableId: follow.id,
+          notifiableType: "follow",
+          source: user,
+          targets: [follow.followableId],
+        })
+        .catch(console.log);
     }
     return {
       status: 201,

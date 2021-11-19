@@ -52,7 +52,7 @@ export default function SearchBox() {
         value={search}
         onChange={handleChange}
         name="q"
-        placeholder="Search..."
+        placeholder="Tìm kiếm..."
       />
       <SearchButton type="submit" disableRipple edge="end" color="primary">
         <SearchIcon />

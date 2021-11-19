@@ -10,6 +10,7 @@ import {
 import { Box, styled } from "@mui/system";
 import ContentLoader from "components/ContentLoader";
 import FollowButton from "features/follow/FollowButton";
+import { formatDate } from "lib/utils";
 import React from "react";
 import { Link } from "react-router-dom";
 import { User } from "../types";
@@ -42,18 +43,12 @@ export function ProfileCardSkeleton() {
     <Card sx={{ mt: 16, mb: 2 }}>
       <Skeleton variant="rectangular" sx={{ ml: "auto" }}>
         <Button variant="contained" startIcon={<Edit />}>
-          Edit profile
+          Chỉnh sửa
         </Button>
       </Skeleton>
       <Box sx={{ "&>*:not(:last-child)": { mb: 2 }, textAlign: "center" }}>
-        <Skeleton sx={{ mx: "auto" }}>
-          <Typography variant="h4" fontWeight="bold">
-            Username
-          </Typography>
-        </Skeleton>
-        <Skeleton sx={{ mx: "auto" }}>
-          <Typography variant="body1">User bio here</Typography>
-        </Skeleton>
+        <Skeleton sx={{ mx: "auto", width: "30%" }} />
+        <Skeleton sx={{ mx: "auto", width: "60%" }} />
         <Stack
           direction="row"
           spacing={2}
@@ -62,9 +57,7 @@ export function ProfileCardSkeleton() {
           flexWrap="wrap"
         >
           <ContentLoader count={3}>
-            <Button variant="text" disabled startIcon={<LocationOn />}>
-              User location
-            </Button>
+            <Skeleton width="20%" sx={{ mr: 1 }} />
           </ContentLoader>
         </Stack>
       </Box>
@@ -83,7 +76,7 @@ export default function ProfileCard({ user, isMe }: Props) {
             component={Link}
             to="/profile/edit"
           >
-            Edit profile
+            Chỉnh sửa
           </Button>
         ) : (
           <FollowButton followableId={user.id} followableType="user" />
@@ -105,7 +98,7 @@ export default function ProfileCard({ user, isMe }: Props) {
             {user.location}
           </Button>
           <Button variant="text" disabled startIcon={<Cake />}>
-            {user.joinedDate}
+            {formatDate(user.joinedDate, true)}
           </Button>
           <Button
             variant="text"

@@ -36,10 +36,10 @@ export default function LoginPage() {
             fontSize="h5.fontSize"
             fontWeight="bold"
           >
-            Welcome to Paper Community
+            Chào mừng đến với Paper Community
           </Typography>
           <Typography textAlign="center" variant="body1" color="GrayText">
-            Paper Community is a community of 1 million amazing developers
+            Paper Community is là một cộng đồng với hơn 1 triệu lập trình viên
           </Typography>
           {buttons.map((btn) => (
             <Button
@@ -56,7 +56,7 @@ export default function LoginPage() {
               component="a"
               href={btn.url}
             >
-              Login with {btn.name}
+              Đăng nhập với {btn.name}
             </Button>
           ))}
         </Paper>

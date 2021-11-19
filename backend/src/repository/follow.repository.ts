@@ -1,10 +1,10 @@
-import { EntityRepository, Repository } from "typeorm";
+import { AbstractRepository, EntityRepository } from "typeorm";
 import { Follow } from "../entity/follow.entity";
 import { User } from "../entity/user.entity";
 import { UserRepository } from "./user.repository";
 
 @EntityRepository(Follow)
-export class FollowRepository extends Repository<Follow> {
+export class FollowRepository extends AbstractRepository<Follow> {
   findUserFollowers(id: string) {
     const qb = this.createQueryBuilder("follow")
       .innerJoinAndSelect("follow.user", "user")
@@ -19,20 +19,25 @@ export class FollowRepository extends Repository<Follow> {
       .where("user.id=:id", { id })
       .getMany();
   }
-  async createFollow(follow: Follow) {
-    const f = await this.findOne({
+  async createFollow(
+    user: User,
+    dto: Pick<Follow, "followableType" | "followableId">
+  ) {
+    const f = await this.repository.findOne({
       where: {
-        followableType: follow.followableType,
-        followableId: follow.followableId,
+        followableType: dto.followableType,
+        followableId: dto.followableId,
+        user,
       },
     });
     if (f) {
       return;
     }
-    return this.save(follow);
+    const follow = this.repository.create({ user, ...dto });
+    return this.repository.save(follow);
   }
   unFollow(user: User, id: string) {
-    return this.delete({
+    return this.repository.delete({
       id,
       user,
     });

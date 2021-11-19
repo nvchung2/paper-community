@@ -42,7 +42,7 @@ export function TagCardSkeleton() {
       </CardContent>
       <CardActions>
         <Skeleton variant="rectangular" sx={{ ml: "auto" }}>
-          <Button variant="contained">Follow</Button>
+          <Button variant="contained">Theo dõi</Button>
         </Skeleton>
       </CardActions>
     </Card>
@@ -72,13 +72,13 @@ export default function TagCard({ tag }: Props) {
             <ListItemIcon>
               <Article />
             </ListItemIcon>
-            <ListItemText primary={`${tag.articlesCount} articles published`} />
+            <ListItemText primary={`${tag.articlesCount} bài viết.`} />
           </ListItem>
           <ListItem disablePadding>
             <ListItemIcon>
               <People />
             </ListItemIcon>
-            <ListItemText primary={`${tag.followersCount} people following`} />
+            <ListItemText primary={`${tag.followersCount} người theo dõi.`} />
           </ListItem>
         </List>
       </CardContent>
@@ -89,7 +89,7 @@ export default function TagCard({ tag }: Props) {
           sx={{ ml: "auto" }}
           variant="contained"
         >
-          Follow
+          Theo dõi
         </FollowButton>
       </CardActions>
     </Card>

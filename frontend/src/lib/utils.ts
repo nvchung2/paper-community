@@ -22,7 +22,7 @@ export function timeAgo(datetime: string) {
   }
   return "Just now";
 }
-export function formatDate(datetime: string) {
+export function formatDate(datetime: string, fullYear = false) {
   const config: Intl.DateTimeFormatOptions = {
     month: "short",
     day: "2-digit",
@@ -30,6 +30,9 @@ export function formatDate(datetime: string) {
   const date = new Date(datetime);
   if (date.getFullYear() != new Date().getFullYear()) {
     config.year = "2-digit";
+  }
+  if (fullYear) {
+    config.year = "numeric";
   }
   return date.toLocaleDateString("en-US", config);
 }

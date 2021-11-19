@@ -1,7 +1,7 @@
 import http from "lib/http";
 import { InfiniteQueryConfig, QueryConfig } from "lib/react-query";
 import { useInfiniteQuery, useQuery } from "react-query";
-import { Tag } from "../types";
+import { Tag } from "./types";
 import { Article } from "features/article/types";
 import { PaginationQuery, PaginationQueryResult } from "types";
 

@@ -25,7 +25,7 @@ export default function ConfirmDialog({
     <>
       {btn}
       <Dialog open={open} onClose={() => setOpen(false)}>
-        <DialogTitle>Confirm your action</DialogTitle>
+        <DialogTitle>Xác nhận</DialogTitle>
         <DialogContent>
           <DialogContentText>{message}</DialogContentText>
         </DialogContent>
@@ -36,9 +36,9 @@ export default function ConfirmDialog({
               onAccept();
             }}
           >
-            YES
+            OK
           </Button>
-          <Button onClick={() => setOpen(false)}>NO</Button>
+          <Button onClick={() => setOpen(false)}>Hủy</Button>
         </DialogActions>
       </Dialog>
     </>
