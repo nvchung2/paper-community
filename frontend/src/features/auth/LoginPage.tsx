@@ -1,23 +1,24 @@
 import { Facebook, GitHub, Google } from "@mui/icons-material";
 import { Box, Button, Paper, Typography } from "@mui/material";
+import config from "config";
 const buttons = [
   {
     name: "Github",
     color: "success" as const,
     icon: <GitHub />,
-    url: "http://localhost:8080/auth/github",
+    url: `${config.SERVER_URL}/auth/github`,
   },
   {
     name: "Google",
     color: "error" as const,
     icon: <Google />,
-    url: "http://localhost:8080/auth/google",
+    url: `${config.SERVER_URL}/auth/google`,
   },
   {
     name: "Facebook",
     color: "primary" as const,
     icon: <Facebook />,
-    url: "http://localhost:8080/auth/facebook",
+    url: `${config.SERVER_URL}/auth/facebook`,
   },
 ];
 export default function LoginPage() {

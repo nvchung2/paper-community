@@ -1,13 +1,13 @@
 import axios, { AxiosError } from "axios";
 import useSnackbar from "hooks/useSnackbar";
 import useToken from "hooks/useToken";
-
+import config from "config";
 export interface ErrorResponse {
   status: number;
   message: string;
 }
 const http = axios.create({
-  baseURL: "http://localhost:8080",
+  baseURL: config.SERVER_URL,
 });
 http.interceptors.response.use(
   (res) => res.data,

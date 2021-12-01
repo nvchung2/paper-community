@@ -6,8 +6,6 @@ import {
   SelectQueryBuilder,
 } from "typeorm";
 import { Article } from "../entity/article.entity";
-import { Comment } from "../entity/comment.entity";
-import { Tag } from "../entity/tag.entity";
 import { User } from "../entity/user.entity";
 import { CommentRepository } from "./comment.repository";
 import { TagRepository } from "./tag.repository";

@@ -6,7 +6,7 @@ import { ExtractJwt, Strategy as JwtStrategy } from "passport-jwt";
 import { VerifyCallback } from "passport-oauth2";
 import { getCustomRepository } from "typeorm";
 import { UserRepository } from "../repository/user.repository";
-
+import config from "../config";
 passport.use(
   new JwtStrategy(
     {
@@ -47,9 +47,9 @@ function callback(
 passport.use(
   new GithubStrategy(
     {
-      clientID: "Iv1.08f50a3a50ab3134",
-      clientSecret: "b7d2b46d31c9d4a66c61e96f8b6d196128892891",
-      callbackURL: "http://localhost:8080/auth/github/callback",
+      clientID: config.GITHUB_ID,
+      clientSecret: config.GITHUB_SECRET,
+      callbackURL: `${config.SERVER_URL}/auth/github/callback`,
       scope: ["read:user"],
     },
     callback
@@ -58,9 +58,9 @@ passport.use(
 passport.use(
   new FacebookStrategy(
     {
-      clientID: "155615789828353",
-      clientSecret: "7ae7ff35ae52a1827a673ee6055d0ed0",
-      callbackURL: "http://localhost:8080/auth/facebook/callback",
+      clientID: config.FACEBOOK_ID,
+      clientSecret: config.FACEBOOK_SECRET,
+      callbackURL: `${config.SERVER_URL}/auth/facebook/callback`,
       profileFields: ["photos", "id", "displayName"],
     },
     callback
@@ -69,10 +69,9 @@ passport.use(
 passport.use(
   new GoogleStrategy(
     {
-      clientID:
-        "150057643993-sh0u3t3d9jgfu3c7vagako9degsbrc9s.apps.googleusercontent.com",
-      clientSecret: "cew2fwwrvX78Wmz4HZSgIItk",
-      callbackURL: "http://localhost:8080/auth/google/callback",
+      clientID: config.GOOGLE_ID,
+      clientSecret: config.GOOGLE_SECRET,
+      callbackURL: `${config.SERVER_URL}/auth/google/callback`,
       scope: ["profile"],
     },
     callback

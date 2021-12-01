@@ -5,7 +5,8 @@ import { User } from "../entity/user.entity";
 import { passport } from "../security/passport";
 import { requireAuth } from "../security/requireAuth.middleware";
 import { Controller, RouterConfig } from "./controller";
-const client_redirect_url = "http://localhost:3000/login/callback";
+import config from "../config";
+const client_redirect_url = `${config.CLIENT_URL}/login/callback`;
 
 export class AuthController extends Controller {
   getRouterConfig(): RouterConfig {

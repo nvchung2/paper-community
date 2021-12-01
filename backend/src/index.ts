@@ -1,5 +1,5 @@
 import cors from "cors";
-import express, { RequestHandler } from "express";
+import express from "express";
 import { createConnection } from "typeorm";
 import { ArticleController } from "./controller/article.controller";
 import { AuthController } from "./controller/auth.controller";
@@ -15,16 +15,11 @@ import {
   notFoundErrorHandler,
 } from "./error/error-handlers";
 import { passport } from "./security/passport";
-const simulateSlowRequest: RequestHandler = (req, res, next) => {
-  setTimeout(() => {
-    next();
-  }, 1000);
-};
+import config from "./config";
 createConnection()
   .then(() => {
     const app = express();
-    //app.use(simulateSlowRequest);
-    app.use(cors({ origin: "http://localhost:3000" }));
+    app.use(cors());
     app.use(express.urlencoded({ extended: true }));
     app.use(express.json());
     app.use(passport.initialize());
@@ -41,6 +36,6 @@ createConnection()
 
     app.use(notFoundErrorHandler);
     app.use(globalErrorHandler);
-    app.listen(8080);
+    app.listen(process.env.PORT);
   })
   .catch(console.log);
